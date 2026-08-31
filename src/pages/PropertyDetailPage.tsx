@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Bed, Bath, Maximize, MapPin, Share2, Check, ArrowLeft, X, Phone, Mail, Calendar, Ruler, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { getPropertyBySlug, getSimilarProperties, submitInquiry, submitWhatsAppInquiry, getSiteSettings } from '../lib/data'
-import { useAuth } from '../lib/auth'
 import { useToast } from '../components/Toast'
 import FavoriteButton from '../components/FavoriteButton'
 import PropertyCard from '../components/PropertyCard'
@@ -14,7 +13,6 @@ import { formatPrice, getLocationString, formatDate } from '../lib/utils'
 export default function PropertyDetailPage() {
   const { slug } = useParams()
   const { toast } = useToast()
-  const { user, profile } = useAuth()
   const [property, setProperty] = useState<Property | null>(null)
   const [similar, setSimilar] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
@@ -39,12 +37,6 @@ export default function PropertyDetailPage() {
       setSiteWhatsapp(settings.whatsapp_number ?? '')
     }).catch(() => {})
   }, [])
-
-  useEffect(() => {
-    if (user) {
-      setForm(f => ({ ...f, name: f.name || (user as any)?.user_metadata?.full_name || '', email: f.email || user.email || '' }))
-    }
-  }, [user])
 
   function handleShare() {
     const url = window.location.href
@@ -83,9 +75,8 @@ export default function PropertyDetailPage() {
     const message = buildWhatsAppMessage(property)
     const { error } = await submitWhatsAppInquiry({
       property_id: property.id,
-      user_id: user?.id,
-      name: profile?.full_name ?? (user as any)?.user_metadata?.full_name ?? undefined,
-      phone: profile?.phone ?? form.phone ?? undefined,
+      name: form.name || undefined,
+      phone: form.phone || undefined,
       generated_message: message,
       property_reference: property.reference_number ?? undefined,
     })

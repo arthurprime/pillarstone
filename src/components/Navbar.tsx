@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
-import { Menu, X, Heart, User, LogOut } from 'lucide-react'
+import { Menu, X, Heart } from 'lucide-react'
 import Logo from './Logo'
-import { useAuth } from '../lib/auth'
 
 const navLinks = [
   { label: 'Properties', to: '/properties' },
@@ -17,8 +16,6 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [accountOpen, setAccountOpen] = useState(false)
-  const { user, profile, signOut } = useAuth()
   const location = useLocation()
   const isHome = location.pathname === '/'
 
@@ -30,7 +27,6 @@ export default function Navbar() {
 
   useEffect(() => {
     setMobileOpen(false)
-    setAccountOpen(false)
   }, [location.pathname])
 
   useEffect(() => {
@@ -73,39 +69,9 @@ export default function Navbar() {
               <Link to="/contact" className="text-sm tracking-wide text-stone-300 hover:text-warm-white transition-colors">
                 Contact
               </Link>
-              <Link to="/favorites" className="text-stone-300 hover:text-warm-white transition-colors" aria-label="Favorites">
+              <Link to="/favorites" className="text-stone-300 hover:text-warm-white transition-colors" aria-label="Saved properties">
                 <Heart size={20} />
               </Link>
-              {user ? (
-                <div className="relative">
-                  <button
-                    onClick={() => setAccountOpen(!accountOpen)}
-                    className="flex items-center gap-2 text-stone-300 hover:text-warm-white transition-colors"
-                  >
-                    <User size={20} />
-                    <span className="text-sm">{profile?.full_name?.split(' ')[0] ?? 'Account'}</span>
-                  </button>
-                  {accountOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-48 bg-warm-white shadow-xl border border-stone-200 py-2">
-                      <Link to="/profile" className="block px-4 py-2 text-sm text-ink-700 hover:bg-stone-100">My Profile</Link>
-                      <Link to="/favorites" className="block px-4 py-2 text-sm text-ink-700 hover:bg-stone-100">Favorites</Link>
-                      {profile?.role === 'admin' || profile?.role === 'editor' ? (
-                        <Link to="/admin" className="block px-4 py-2 text-sm text-ink-700 hover:bg-stone-100">Dashboard</Link>
-                      ) : null}
-                      <button
-                        onClick={() => signOut()}
-                        className="flex items-center gap-2 w-full px-4 py-2 text-sm text-ink-700 hover:bg-stone-100"
-                      >
-                        <LogOut size={16} /> Sign Out
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <Link to="/login" className="text-sm tracking-wide text-stone-300 hover:text-warm-white transition-colors">
-                  Sign In
-                </Link>
-              )}
             </div>
 
             <button
@@ -119,7 +85,6 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Mobile drawer */}
       {mobileOpen && (
         <div className="fixed inset-0 z-[60] lg:hidden">
           <div className="absolute inset-0 bg-ink-950/50" onClick={() => setMobileOpen(false)} />
@@ -145,18 +110,7 @@ export default function Navbar() {
                 </NavLink>
               ))}
               <Link to="/contact" className="px-6 py-3 text-base text-ink-600 border-b border-stone-100 hover:text-ink-900">Contact</Link>
-              <Link to="/favorites" className="px-6 py-3 text-base text-ink-600 border-b border-stone-100 hover:text-ink-900">Favorites</Link>
-              {user ? (
-                <>
-                  <Link to="/profile" className="px-6 py-3 text-base text-ink-600 border-b border-stone-100 hover:text-ink-900">My Profile</Link>
-                  {(profile?.role === 'admin' || profile?.role === 'editor') && (
-                    <Link to="/admin" className="px-6 py-3 text-base text-ink-600 border-b border-stone-100 hover:text-ink-900">Dashboard</Link>
-                  )}
-                  <button onClick={() => signOut()} className="px-6 py-3 text-base text-left text-ink-600 hover:text-ink-900">Sign Out</button>
-                </>
-              ) : (
-                <Link to="/login" className="px-6 py-3 text-base text-ink-600 hover:text-ink-900">Sign In</Link>
-              )}
+              <Link to="/favorites" className="px-6 py-3 text-base text-ink-600 hover:text-ink-900">Saved</Link>
             </nav>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Navigate, Routes, Route } from 'react-router-dom'
 import { ToastProvider } from './components/Toast'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -13,9 +13,6 @@ import DevelopmentDetailPage from './pages/DevelopmentDetailPage'
 import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
 import FavoritesPage from './pages/FavoritesPage'
-import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegisterPage'
-import ProfilePage from './pages/ProfilePage'
 import SellPage from './pages/SellPage'
 import NotFoundPage from './pages/NotFoundPage'
 import AdminPage from './pages/admin/AdminPage'
@@ -81,9 +78,9 @@ export default function App() {
                   <Route path="/about" element={<AboutPage />} />
                   <Route path="/contact" element={<ContactPage />} />
                   <Route path="/favorites" element={<FavoritesPage />} />
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/register" element={<RegisterPage />} />
-                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/login" element={<Navigate to="/admin" replace />} />
+                  <Route path="/register" element={<Navigate to="/" replace />} />
+                  <Route path="/profile" element={<Navigate to="/" replace />} />
                   <Route path="/sell" element={<SellPage />} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes>

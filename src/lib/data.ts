@@ -70,6 +70,24 @@ export async function getPropertyBySlug(slug: string): Promise<Property | null> 
   return data as Property | null
 }
 
+export async function getPropertiesByIds(ids: string[]): Promise<Property[]> {
+  if (ids.length === 0) return []
+  const { data, error } = await supabase
+    .from('properties')
+    .select(`
+      *,
+      property_types (*),
+      locations (*),
+      agents (*),
+      property_images (*)
+    `)
+    .in('id', ids)
+    .eq('status', 'published')
+  if (error) throw error
+  const list = (data as Property[]) ?? []
+  return ids.map(id => list.find(p => p.id === id)).filter(Boolean) as Property[]
+}
+
 export async function getFeaturedProperties(limit = 6): Promise<Property[]> {
   const { data, error } = await supabase
     .from('properties')

@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import { Heart } from 'lucide-react'
-import { useAuth } from '../lib/auth'
-import { saveFavorite, removeFavorite, isFavorited } from '../lib/data'
+import { isSavedLocally, toggleSavedLocally } from '../lib/localFavorites'
 import { useToast } from './Toast'
 
 interface FavoriteButtonProps {
@@ -11,44 +9,21 @@ interface FavoriteButtonProps {
 }
 
 export default function FavoriteButton({ propertyId, variant = 'card' }: FavoriteButtonProps) {
-  const { user } = useAuth()
   const { toast } = useToast()
   const [favorited, setFavorited] = useState(false)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (user) {
-      isFavorited(user.id, propertyId).then(setFavorited)
-    }
-  }, [user, propertyId])
+    setFavorited(isSavedLocally(propertyId))
+  }, [propertyId])
 
-  async function handleClick(e: React.MouseEvent) {
+  function handleClick(e: React.MouseEvent) {
     e.preventDefault()
     e.stopPropagation()
-
-    if (!user) {
-      toast('Please sign in to save favorites.', 'info')
-      return
-    }
-
     setLoading(true)
-    if (favorited) {
-      const { error } = await removeFavorite(user.id, propertyId)
-      if (error) {
-        toast('Could not remove favorite. Please try again.', 'error')
-      } else {
-        setFavorited(false)
-        toast('Removed from favorites.', 'info')
-      }
-    } else {
-      const { error } = await saveFavorite(user.id, propertyId)
-      if (error) {
-        toast('Could not save favorite. Please try again.', 'error')
-      } else {
-        setFavorited(true)
-        toast('Saved to favorites.', 'success')
-      }
-    }
+    const saved = toggleSavedLocally(propertyId)
+    setFavorited(saved)
+    toast(saved ? 'Saved on this device.' : 'Removed from saved.', saved ? 'success' : 'info')
     setLoading(false)
   }
 
@@ -57,10 +32,11 @@ export default function FavoriteButton({ propertyId, variant = 'card' }: Favorit
 
   return (
     <button
+      type="button"
       onClick={handleClick}
       disabled={loading}
       className={`${sizeClass} flex items-center justify-center bg-warm-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-warm-white transition-all disabled:opacity-50`}
-      aria-label={favorited ? 'Remove from favorites' : 'Add to favorites'}
+      aria-label={favorited ? 'Remove from saved' : 'Save property'}
       aria-pressed={favorited}
     >
       <Heart
