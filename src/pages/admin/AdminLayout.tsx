@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Outlet, NavLink, Link } from 'react-router-dom'
 import {
   LayoutDashboard, Building2, Building, Users,
@@ -70,25 +70,44 @@ function AdminLogin() {
 export default function AdminLayout() {
   const { user, profile, loading, signOut } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const { toast } = useToast()
 
-  useEffect(() => {
-    if (!loading && user && profile && profile.role !== 'admin' && profile.role !== 'editor') {
-      toast('This area is for staff only.', 'error')
-      signOut()
-    }
-  }, [user, profile, loading, signOut, toast])
+  const isStaff = profile?.role === 'admin' || profile?.role === 'editor'
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center bg-stone-50"><p className="text-stone-400">Loading...</p></div>
   }
 
-  if (!user || (profile && profile.role !== 'admin' && profile.role !== 'editor')) {
+  if (!user) {
     return <AdminLogin />
   }
 
   if (!profile) {
     return <div className="min-h-screen flex items-center justify-center bg-stone-50"><p className="text-stone-400">Loading...</p></div>
+  }
+
+  if (!isStaff) {
+    return (
+      <div className="min-h-screen bg-stone-50 flex items-center justify-center px-4">
+        <div className="max-w-lg bg-warm-white border border-stone-200 p-8">
+          <h1 className="font-display text-2xl text-ink-900 mb-3">Almost there</h1>
+          <p className="text-sm text-stone-600 mb-4">
+            You signed in, but this account is still a normal user. Mark it as admin in Supabase, then sign in again.
+          </p>
+          <p className="text-sm text-stone-600 mb-2">SQL Editor → New query → Run (use the same email you used here):</p>
+          <pre className="bg-ink-950 text-stone-200 text-xs p-4 overflow-x-auto mb-4">{`INSERT INTO public.profiles (id, email, role)
+SELECT id, email, 'admin' FROM auth.users
+WHERE email = '${user.email ?? 'you@example.com'}'
+ON CONFLICT (id) DO UPDATE SET role = 'admin';`}</pre>
+          <button
+            type="button"
+            onClick={() => signOut()}
+            className="px-4 py-2 bg-ink-900 text-warm-white text-sm"
+          >
+            Sign out and try again
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
