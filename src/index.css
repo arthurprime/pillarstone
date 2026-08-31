@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  --color-ink-950: #0a0a0a;
+  --color-ink-900: #141414;
+  --color-ink-800: #1c1c1c;
+  --color-ink-700: #2a2a2a;
+  --color-ink-600: #3d3d3d;
+  --color-ink-500: #525252;
+  --color-ink-400: #737373;
+  --color-ink-300: #a3a3a3;
+  --color-ink-200: #d4d4d4;
+  --color-ink-100: #e5e5e5;
+
+  --color-stone-50: #faf9f7;
+  --color-stone-100: #f5f3ef;
+  --color-stone-200: #e8e4dc;
+  --color-stone-300: #d6cfc1;
+  --color-stone-400: #b8ae9b;
+  --color-stone-500: #9a8d76;
+  --color-stone-600: #7d6f57;
+  --color-stone-700: #5f5443;
+  --color-stone-800: #443c30;
+  --color-stone-900: #2b261e;
+
+  --color-ivory: #f8f6f1;
+  --color-warm-white: #fdfcfb;
+  --color-accent: #8a7a5f;
+  --color-accent-dark: #6b5d45;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-warm-white);
+    color: var(--color-ink-900);
+    font-weight: 400;
+    line-height: 1.6;
+    letter-spacing: -0.005em;
+  }
+  button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+  button, a { transition-property: color, background-color, border-color, opacity, transform, box-shadow; transition-duration: 180ms; }
+  input::placeholder, textarea::placeholder { color: var(--color-stone-400); }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+  }
+  ::selection {
+    background-color: var(--color-ink-900);
+    color: var(--color-warm-white);
+  }
+}
+
+@layer utilities {
+  .font-display { font-family: var(--font-display); }
+  .font-sans { font-family: var(--font-sans); }
+
+  .container-px { padding-left: 1.5rem; padding-right: 1.5rem; }
+  @media (min-width: 768px) { .container-px { padding-left: 2.5rem; padding-right: 2.5rem; } }
+  @media (min-width: 1280px) { .container-px { padding-left: 3rem; padding-right: 3rem; } }
+
+  .max-w-site { max-width: 1440px; margin: 0 auto; }
+  .section-rule { border-top: 1px solid var(--color-stone-200); }
+  .eyebrow { font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--color-stone-600); }
+  .focus-ring:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+
+  .text-balance { text-wrap: balance; }
+
+  .animate-fade-in { animation: fadeIn 0.6s ease-out both; }
+  .animate-fade-up { animation: fadeUp 0.6s ease-out both; }
+  .animate-scale-in { animation: scaleIn 0.3s ease-out both; }
+  .animate-slide-in-right { animation: slideInRight 0.3s ease-out both; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes slideInRight {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+  @keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+  }
+  .skeleton {
+    background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
+    background-size: 1000px 100%;
+    animation: shimmer 1.5s infinite linear;
+  }
+  .soft-shadow { box-shadow: 0 14px 35px rgba(20, 20, 20, 0.07); }
+  .image-wash { background: linear-gradient(180deg, transparent 55%, rgba(10, 10, 10, 0.52)); }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c4c4c4; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
