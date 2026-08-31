@@ -12,7 +12,9 @@ npm install
 npm run dev
 ```
 
-## Hosting
+## Database (new Supabase project)
+
+Bolt does not export credentials. Create a new project and follow **[supabase/SETUP.md](supabase/SETUP.md)**. Paste `supabase/complete_setup.sql` into the SQL Editor so tables, photos buckets, demo listings, and signup profiles are created. Then put `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` on Vercel and redeploy.
 
 Vite inlines `VITE_*` variables at **build** time. On Netlify, Vercel, or similar:
 
