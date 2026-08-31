@@ -50,8 +50,7 @@ INSERT INTO public.locations (country, city, district, neighborhood, latitude, l
 ('Rwanda', 'Kigali', 'Gasabo', 'Remera', -1.9443, 30.1302),
 ('Rwanda', 'Kigali', 'Kicukiro', 'Kagarama', -1.9706, 30.1512),
 ('Rwanda', 'Kigali', 'Nyarugenge', 'Gikondo', -1.9550, 30.0620),
-('Rwanda', 'Kigali', 'Gasabo', 'Nyandungu', -1.9350, 30.1450)
-ON CONFLICT DO NOTHING;
+('Rwanda', 'Kigali', 'Gasabo', 'Nyandungu', -1.9350, 30.1450);
 
 -- ============ AGENTS ============
 INSERT INTO public.agents (name, email, phone, bio, role, is_active, sort_order) VALUES
@@ -281,7 +280,7 @@ ON CONFLICT (section) DO NOTHING;
 
 -- ============ SITE SETTINGS ============
 INSERT INTO public.site_settings (key, value) VALUES
-('company_name', 'Estate'),
+('company_name', 'Pillarstone'),
 ('company_email', 'hello@estate.rw'),
 ('company_phone', '+250 788 100 100'),
 ('company_address', 'KG 11 Avenue, Kimihurura, Kigali, Rwanda'),
@@ -289,7 +288,7 @@ INSERT INTO public.site_settings (key, value) VALUES
 ('twitter_url', 'https://twitter.com'),
 ('linkedin_url', 'https://linkedin.com'),
 ('instagram_url', 'https://instagram.com'),
-('seo_default_title', 'Estate — Find a place worth coming home to'),
+('seo_default_title', 'Pillarstone - Find a place worth coming home to'),
 ('seo_default_description', 'Homes, land and properties selected with care in Kigali, Rwanda.'),
-('footer_text', 'Estate is a real estate platform helping people find homes, land, and commercial properties across Rwanda.')
+('footer_text', 'Pillarstone helps people find homes, land, and commercial properties with a more considered approach to real estate.')
 ON CONFLICT (key) DO NOTHING;

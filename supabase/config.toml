@@ -1,0 +1,13 @@
+# Project ID (fill after you create the project in the dashboard)
+# project_id = "xxxxxxxxxxxxxxxx"
+
+[api]
+enabled = true
+
+[db]
+port = 54322
+
+[auth]
+enabled = true
+site_url = "https://pillarstone-black.vercel.app"
+additional_redirect_urls = ["https://pillarstone-black.vercel.app", "http://localhost:5173"]
