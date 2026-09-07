@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Bed, Bath, Maximize, MapPin } from 'lucide-react'
+import { Bed, Bath, Maximize, MapPin, Play } from 'lucide-react'
 import type { Property } from '../lib/types'
 import { formatPrice, getLocationString } from '../lib/utils'
 import { getPropertyPrimaryImage } from '../lib/data'
@@ -44,6 +44,11 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             <span className="px-3 py-1.5 bg-accent text-warm-white text-[10px] uppercase tracking-[0.14em]">
               Featured
             </span>
+          </div>
+        )}
+        {property.youtube_url && (
+          <div className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-ink-950/80 text-warm-white flex items-center justify-center">
+            <Play size={14} className="ml-0.5 fill-warm-white" />
           </div>
         )}
       </div>

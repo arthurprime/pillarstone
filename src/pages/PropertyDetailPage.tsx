@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Bed, Bath, Maximize, MapPin, Share2, Check, ArrowLeft, X, Phone, Mail, Calendar, Ruler, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Bed, Bath, Maximize, MapPin, Share2, Check, ArrowLeft, X, Phone, Mail, Calendar, Ruler, MessageCircle, ChevronLeft, ChevronRight, Play } from 'lucide-react'
 import { getPropertyBySlug, getSimilarProperties, submitInquiry, submitWhatsAppInquiry, getSiteSettings } from '../lib/data'
 import { useToast } from '../components/Toast'
 import FavoriteButton from '../components/FavoriteButton'
@@ -8,7 +8,7 @@ import PropertyCard from '../components/PropertyCard'
 import LoadingSkeleton from '../components/LoadingSkeleton'
 import EmptyState from '../components/EmptyState'
 import type { Property } from '../lib/types'
-import { formatPrice, getLocationString, formatDate } from '../lib/utils'
+import { formatPrice, getLocationString, formatDate, getYouTubeEmbedUrl, getYouTubeThumbnailUrl } from '../lib/utils'
 
 export default function PropertyDetailPage() {
   const { slug } = useParams()
@@ -22,10 +22,12 @@ export default function PropertyDetailPage() {
   const [submitting, setSubmitting] = useState(false)
   const [whatsappInquiring, setWhatsappInquiring] = useState(false)
   const [siteWhatsapp, setSiteWhatsapp] = useState('')
+  const [videoPlaying, setVideoPlaying] = useState(false)
 
   useEffect(() => {
     if (!slug) return
     setLoading(true)
+    setVideoPlaying(false)
     getPropertyBySlug(slug).then(p => {
       setProperty(p)
       if (p) getSimilarProperties(p, 3).then(setSimilar).catch(() => {})
@@ -257,6 +259,42 @@ export default function PropertyDetailPage() {
               <div className="mb-8">
                 <h2 className="font-display text-xl text-ink-900 mb-4">Description</h2>
                 <p className="text-ink-600 leading-relaxed whitespace-pre-line">{property.description}</p>
+              </div>
+            )}
+
+            {property.youtube_url && getYouTubeThumbnailUrl(property.youtube_url) && (
+              <div className="mb-8">
+                <h2 className="font-display text-xl text-ink-900 mb-4">Property Video</h2>
+                <div className="relative aspect-video overflow-hidden bg-ink-950">
+                  {videoPlaying && getYouTubeEmbedUrl(property.youtube_url) ? (
+                    <iframe
+                      src={`${getYouTubeEmbedUrl(property.youtube_url)}?autoplay=1`}
+                      title={`${property.title} video`}
+                      className="absolute inset-0 w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setVideoPlaying(true)}
+                      className="block w-full h-full relative group"
+                      aria-label="Play property video"
+                    >
+                      <img
+                        src={getYouTubeThumbnailUrl(property.youtube_url) ?? ''}
+                        alt={`${property.title} video thumbnail`}
+                        className="w-full h-full object-cover"
+                      />
+                      <span className="absolute inset-0 bg-ink-950/30 group-hover:bg-ink-950/40 transition-colors" />
+                      <span className="absolute inset-0 flex items-center justify-center">
+                        <span className="w-16 h-16 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                          <Play size={28} className="ml-1 fill-white" />
+                        </span>
+                      </span>
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 

@@ -870,6 +870,9 @@ CREATE POLICY "site_assets_write_admin" ON storage.objects
 ALTER TABLE public.properties
   ADD COLUMN IF NOT EXISTS whatsapp_number text;
 
+ALTER TABLE public.properties
+  ADD COLUMN IF NOT EXISTS youtube_url text;
+
 -- ========== supabase\migrations\20260828031720_0005_add_whatsapp_inquiry_columns.sql ==========
 /*
 # Add WhatsApp inquiry columns to inquiries table

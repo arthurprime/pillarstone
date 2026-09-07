@@ -93,6 +93,7 @@ export interface Property {
   longitude: number | null
   agent_id: string | null
   whatsapp_number: string | null
+  youtube_url: string | null
   is_featured: boolean
   published_at: string | null
   created_at: string

@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { ArrowLeft, Save, Upload, X, Star, ChevronLeft, ChevronRight, Images } from 'lucide-react'
 import { supabase, STORAGE_BUCKETS, getPublicImageUrl } from '../../lib/supabase'
 import { useToast } from '../../components/Toast'
-import { slugify } from '../../lib/utils'
+import { getYouTubeThumbnailUrl, getYouTubeVideoId, slugify } from '../../lib/utils'
 import type { PropertyType, Location, Agent } from '../../lib/types'
 
 interface ImageRecord {
@@ -28,7 +28,7 @@ export default function AdminPropertyEdit() {
     title: '', slug: '', description: '', property_type_id: '', listing_type: 'sale',
     status: 'draft', price: '', currency: 'USD', location_id: '', bedrooms: '', bathrooms: '',
     area: '', land_area: '', year_built: '', reference_number: '', latitude: '', longitude: '',
-    agent_id: '', whatsapp_number: '', is_featured: false,
+    agent_id: '', whatsapp_number: '', youtube_url: '', is_featured: false,
   })
   const [types, setTypes] = useState<PropertyType[]>([])
   const [locations, setLocations] = useState<Location[]>([])
@@ -61,7 +61,7 @@ export default function AdminPropertyEdit() {
             location_id: data.location_id ?? '', bedrooms: String(data.bedrooms ?? ''), bathrooms: String(data.bathrooms ?? ''),
             area: String(data.area ?? ''), land_area: String(data.land_area ?? ''), year_built: String(data.year_built ?? ''),
             reference_number: data.reference_number ?? '', latitude: String(data.latitude ?? ''), longitude: String(data.longitude ?? ''),
-            agent_id: data.agent_id ?? '', whatsapp_number: data.whatsapp_number ?? '', is_featured: data.is_featured ?? false,
+            agent_id: data.agent_id ?? '', whatsapp_number: data.whatsapp_number ?? '', youtube_url: data.youtube_url ?? '', is_featured: data.is_featured ?? false,
           })
         }
       })
@@ -202,6 +202,7 @@ export default function AdminPropertyEdit() {
       longitude: form.longitude ? Number(form.longitude) : null,
       agent_id: form.agent_id || null,
       whatsapp_number: form.whatsapp_number || null,
+      youtube_url: form.youtube_url.trim() || null,
       is_featured: form.is_featured,
     }
     if (form.status === 'published' && !isEdit) payload.published_at = new Date().toISOString()
@@ -210,10 +211,10 @@ export default function AdminPropertyEdit() {
 
     if (isEdit && id) {
       const { error } = await supabase.from('properties').update(payload).eq('id', id)
-      if (error) { toast('Could not save property.', 'error'); setSaving(false); return }
+      if (error) { toast(error.message || 'Could not save property.', 'error'); setSaving(false); return }
     } else {
       const { data, error } = await supabase.from('properties').insert(payload).select('id').single()
-      if (error) { toast('Could not create property.', 'error'); setSaving(false); return }
+      if (error) { toast(error.message || 'Could not create property.', 'error'); setSaving(false); return }
       propertyId = data.id
     }
 
@@ -440,6 +441,38 @@ export default function AdminPropertyEdit() {
                 </div>
               ))}
             </div>
+          )}
+        </div>
+
+        <div className="bg-warm-white border border-stone-200 p-6">
+          <h3 className="font-display text-lg text-ink-900 mb-4">YouTube Video</h3>
+          <p className="text-sm text-stone-500 mb-4">
+            Paste a YouTube link for this property. The video thumbnail is shown automatically on the listing.
+          </p>
+          <AdminField label="YouTube URL">
+            <input
+              type="text"
+              value={form.youtube_url}
+              onChange={(e) => update('youtube_url', e.target.value)}
+              className="admin-input"
+              placeholder="https://www.youtube.com/watch?v=..."
+            />
+          </AdminField>
+          {form.youtube_url && (
+            getYouTubeVideoId(form.youtube_url) ? (
+              <div className="mt-4 max-w-md">
+                <p className="text-xs tracking-wide uppercase text-stone-500 mb-2">Thumbnail preview</p>
+                <div className="relative aspect-video overflow-hidden bg-stone-100 border border-stone-200">
+                  <img
+                    src={getYouTubeThumbnailUrl(form.youtube_url) ?? ''}
+                    alt="YouTube thumbnail"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-red-600 mt-2">Enter a valid YouTube link to see the thumbnail.</p>
+            )
           )}
         </div>
 
