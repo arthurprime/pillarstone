@@ -162,6 +162,7 @@ CREATE TABLE IF NOT EXISTS public.properties (
   latitude float8,
   longitude float8,
   agent_id uuid REFERENCES public.agents(id) ON DELETE SET NULL,
+  youtube_url text,
   is_featured boolean NOT NULL DEFAULT false,
   published_at timestamptz,
   created_at timestamptz NOT NULL DEFAULT now(),

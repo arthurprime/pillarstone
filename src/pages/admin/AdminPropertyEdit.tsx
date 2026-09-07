@@ -4,6 +4,7 @@ import { ArrowLeft, Save, Upload, X, Star, ChevronLeft, ChevronRight, Images } f
 import { supabase, STORAGE_BUCKETS, getPublicImageUrl } from '../../lib/supabase'
 import { useToast } from '../../components/Toast'
 import { getYouTubeThumbnailUrl, getYouTubeVideoId, slugify } from '../../lib/utils'
+import YouTubePlayOverlay from '../../components/YouTubePlayOverlay'
 import type { PropertyType, Location, Agent } from '../../lib/types'
 
 interface ImageRecord {
@@ -16,6 +17,13 @@ interface ImageRecord {
 const MAX_FILE_SIZE = 10 * 1024 * 1024
 const MAX_IMAGES = 40
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']
+
+function saveErrorMessage(message?: string) {
+  if (message && /youtube_url/i.test(message)) {
+    return 'YouTube URL could not be saved. In Supabase SQL Editor, run: ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS youtube_url text;'
+  }
+  return message || 'Could not save property.'
+}
 
 export default function AdminPropertyEdit() {
   const { id } = useParams()
@@ -211,10 +219,10 @@ export default function AdminPropertyEdit() {
 
     if (isEdit && id) {
       const { error } = await supabase.from('properties').update(payload).eq('id', id)
-      if (error) { toast(error.message || 'Could not save property.', 'error'); setSaving(false); return }
+      if (error) { toast(saveErrorMessage(error.message), 'error'); setSaving(false); return }
     } else {
       const { data, error } = await supabase.from('properties').insert(payload).select('id').single()
-      if (error) { toast(error.message || 'Could not create property.', 'error'); setSaving(false); return }
+      if (error) { toast(saveErrorMessage(error.message), 'error'); setSaving(false); return }
       propertyId = data.id
     }
 
@@ -468,6 +476,7 @@ export default function AdminPropertyEdit() {
                     alt="YouTube thumbnail"
                     className="w-full h-full object-cover"
                   />
+                  <YouTubePlayOverlay size={68} />
                 </div>
               </div>
             ) : (

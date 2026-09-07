@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Bed, Bath, Maximize, MapPin, Share2, Check, ArrowLeft, X, Phone, Mail, Calendar, Ruler, MessageCircle, ChevronLeft, ChevronRight, Play } from 'lucide-react'
+import { Bed, Bath, Maximize, MapPin, Share2, Check, ArrowLeft, X, Phone, Mail, Calendar, Ruler, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { getPropertyBySlug, getSimilarProperties, submitInquiry, submitWhatsAppInquiry, getSiteSettings } from '../lib/data'
 import { useToast } from '../components/Toast'
 import FavoriteButton from '../components/FavoriteButton'
@@ -9,6 +9,7 @@ import LoadingSkeleton from '../components/LoadingSkeleton'
 import EmptyState from '../components/EmptyState'
 import type { Property } from '../lib/types'
 import { formatPrice, getLocationString, formatDate, getYouTubeEmbedUrl, getYouTubeThumbnailUrl } from '../lib/utils'
+import YouTubePlayOverlay from '../components/YouTubePlayOverlay'
 
 export default function PropertyDetailPage() {
   const { slug } = useParams()
@@ -286,12 +287,8 @@ export default function PropertyDetailPage() {
                         alt={`${property.title} video thumbnail`}
                         className="w-full h-full object-cover"
                       />
-                      <span className="absolute inset-0 bg-ink-950/30 group-hover:bg-ink-950/40 transition-colors" />
-                      <span className="absolute inset-0 flex items-center justify-center">
-                        <span className="w-16 h-16 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-                          <Play size={28} className="ml-1 fill-white" />
-                        </span>
-                      </span>
+                      <span className="absolute inset-0 bg-ink-950/25 group-hover:bg-ink-950/35 transition-colors" />
+                      <YouTubePlayOverlay size={80} />
                     </button>
                   )}
                 </div>
