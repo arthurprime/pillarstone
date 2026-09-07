@@ -4,7 +4,7 @@ import { Plus, Search, Eye, Pencil, Trash2, Star } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { useToast } from '../../components/Toast'
 import Modal from '../../components/Modal'
-import { formatPrice, getLocationString } from '../../lib/utils'
+import { formatPrice, getLocationString, youtubeUrlFromProperty } from '../../lib/utils'
 import type { Property } from '../../lib/types'
 
 export default function AdminProperties() {
@@ -28,7 +28,7 @@ export default function AdminProperties() {
     if (error) {
       toast('Could not load properties.', 'error')
     } else {
-      setProperties(data ?? [])
+      setProperties((data ?? []).map((row) => ({ ...row, youtube_url: youtubeUrlFromProperty(row) })))
     }
     setLoading(false)
   }

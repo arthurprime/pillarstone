@@ -1,10 +1,15 @@
 import { supabase, STORAGE_BUCKETS, getPublicImageUrl } from './supabase'
+import { youtubeUrlFromProperty } from './utils'
 import type {
   Property, PropertyType, PropertyFeature, Location, Agent,
   PropertyImage, Development, DevelopmentUnit, Article, ArticleCategory,
   Inquiry, Favorite, SellRequest, SiteContent, SiteSetting,
   PropertySearchParams,
 } from './types'
+
+function withYoutubeUrl<T extends { youtube_url?: string | null; amenities?: string[] | null }>(row: T): T {
+  return { ...row, youtube_url: youtubeUrlFromProperty(row) }
+}
 
 // ============ PROPERTIES ============
 
@@ -50,7 +55,7 @@ export async function getProperties(params: PropertySearchParams = {}): Promise<
 
   const { data, error, count } = await query
   if (error) throw error
-  return { data: (data as Property[]) ?? [], total: count ?? 0 }
+  return { data: ((data as Property[]) ?? []).map(withYoutubeUrl), total: count ?? 0 }
 }
 
 export async function getPropertyBySlug(slug: string): Promise<Property | null> {
@@ -67,7 +72,7 @@ export async function getPropertyBySlug(slug: string): Promise<Property | null> 
     .eq('slug', slug)
     .maybeSingle()
   if (error) throw error
-  return data as Property | null
+  return data ? withYoutubeUrl(data as Property) : null
 }
 
 export async function getPropertiesByIds(ids: string[]): Promise<Property[]> {
@@ -84,7 +89,7 @@ export async function getPropertiesByIds(ids: string[]): Promise<Property[]> {
     .in('id', ids)
     .eq('status', 'published')
   if (error) throw error
-  const list = (data as Property[]) ?? []
+  const list = ((data as Property[]) ?? []).map(withYoutubeUrl)
   return ids.map(id => list.find(p => p.id === id)).filter(Boolean) as Property[]
 }
 
@@ -102,7 +107,7 @@ export async function getFeaturedProperties(limit = 6): Promise<Property[]> {
     .order('published_at', { ascending: false })
     .limit(limit)
   if (error) throw error
-  return (data as Property[]) ?? []
+  return ((data as Property[]) ?? []).map(withYoutubeUrl)
 }
 
 export async function getLatestProperties(limit = 6): Promise<Property[]> {
@@ -118,7 +123,7 @@ export async function getLatestProperties(limit = 6): Promise<Property[]> {
     .order('published_at', { ascending: false })
     .limit(limit)
   if (error) throw error
-  return (data as Property[]) ?? []
+  return ((data as Property[]) ?? []).map(withYoutubeUrl)
 }
 
 export async function getSimilarProperties(property: Property, limit = 3): Promise<Property[]> {
@@ -142,7 +147,7 @@ export async function getSimilarProperties(property: Property, limit = 3): Promi
 
   const { data, error } = await query
   if (error) throw error
-  return (data as Property[]) ?? []
+  return ((data as Property[]) ?? []).map(withYoutubeUrl)
 }
 
 // ============ PROPERTY TYPES ============

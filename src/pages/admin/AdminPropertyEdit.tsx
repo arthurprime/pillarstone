@@ -3,7 +3,14 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { ArrowLeft, Save, Upload, X, Star, ChevronLeft, ChevronRight, Images } from 'lucide-react'
 import { supabase, STORAGE_BUCKETS, getPublicImageUrl } from '../../lib/supabase'
 import { useToast } from '../../components/Toast'
-import { getYouTubeThumbnailUrl, getYouTubeVideoId, slugify } from '../../lib/utils'
+import {
+  amenitiesWithYoutubeUrl,
+  getYouTubeThumbnailUrl,
+  getYouTubeVideoId,
+  isMissingYoutubeUrlColumn,
+  slugify,
+  youtubeUrlFromProperty,
+} from '../../lib/utils'
 import YouTubePlayOverlay from '../../components/YouTubePlayOverlay'
 import type { PropertyType, Location, Agent } from '../../lib/types'
 
@@ -19,9 +26,6 @@ const MAX_IMAGES = 40
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']
 
 function saveErrorMessage(message?: string) {
-  if (message && /youtube_url/i.test(message)) {
-    return 'YouTube URL could not be saved. In Supabase SQL Editor, run: ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS youtube_url text;'
-  }
   return message || 'Could not save property.'
 }
 
@@ -31,6 +35,7 @@ export default function AdminPropertyEdit() {
   const { toast } = useToast()
   const isEdit = !!id
   const dropRef = useRef<HTMLLabelElement>(null)
+  const amenitiesRef = useRef<string[]>([])
 
   const [form, setForm] = useState({
     title: '', slug: '', description: '', property_type_id: '', listing_type: 'sale',
@@ -62,6 +67,7 @@ export default function AdminPropertyEdit() {
     if (isEdit && id) {
       supabase.from('properties').select('*').eq('id', id).maybeSingle().then(({ data }) => {
         if (data) {
+          amenitiesRef.current = data.amenities ?? []
           setForm({
             title: data.title ?? '', slug: data.slug ?? '', description: data.description ?? '',
             property_type_id: data.property_type_id ?? '', listing_type: data.listing_type ?? 'sale',
@@ -69,7 +75,7 @@ export default function AdminPropertyEdit() {
             location_id: data.location_id ?? '', bedrooms: String(data.bedrooms ?? ''), bathrooms: String(data.bathrooms ?? ''),
             area: String(data.area ?? ''), land_area: String(data.land_area ?? ''), year_built: String(data.year_built ?? ''),
             reference_number: data.reference_number ?? '', latitude: String(data.latitude ?? ''), longitude: String(data.longitude ?? ''),
-            agent_id: data.agent_id ?? '', whatsapp_number: data.whatsapp_number ?? '', youtube_url: data.youtube_url ?? '', is_featured: data.is_featured ?? false,
+            agent_id: data.agent_id ?? '', whatsapp_number: data.whatsapp_number ?? '', youtube_url: youtubeUrlFromProperty(data) ?? '', is_featured: data.is_featured ?? false,
           })
         }
       })
@@ -190,6 +196,8 @@ export default function AdminPropertyEdit() {
     setSaving(true)
 
     const slug = form.slug || slugify(form.title)
+    const youtubeUrl = form.youtube_url.trim() || null
+    const amenities = amenitiesWithYoutubeUrl(amenitiesRef.current, youtubeUrl)
     const payload: Record<string, unknown> = {
       title: form.title,
       slug,
@@ -210,21 +218,32 @@ export default function AdminPropertyEdit() {
       longitude: form.longitude ? Number(form.longitude) : null,
       agent_id: form.agent_id || null,
       whatsapp_number: form.whatsapp_number || null,
-      youtube_url: form.youtube_url.trim() || null,
+      youtube_url: youtubeUrl,
+      amenities,
       is_featured: form.is_featured,
     }
     if (form.status === 'published' && !isEdit) payload.published_at = new Date().toISOString()
 
     let propertyId = id
 
-    if (isEdit && id) {
-      const { error } = await supabase.from('properties').update(payload).eq('id', id)
-      if (error) { toast(saveErrorMessage(error.message), 'error'); setSaving(false); return }
-    } else {
-      const { data, error } = await supabase.from('properties').insert(payload).select('id').single()
-      if (error) { toast(saveErrorMessage(error.message), 'error'); setSaving(false); return }
-      propertyId = data.id
+    async function saveProperty() {
+      if (isEdit && id) {
+        const { error } = await supabase.from('properties').update(payload).eq('id', id)
+        return { data: { id }, error }
+      }
+      return supabase.from('properties').insert(payload).select('id').single()
     }
+
+    let { data, error } = await saveProperty()
+    if (error && isMissingYoutubeUrlColumn(error)) {
+      delete payload.youtube_url
+      const retry = await saveProperty()
+      data = retry.data
+      error = retry.error
+    }
+    if (error) { toast(saveErrorMessage(error.message), 'error'); setSaving(false); return }
+    amenitiesRef.current = amenities
+    if (!isEdit) propertyId = data?.id
 
     if (propertyId) {
       if (removedIds.length > 0) {

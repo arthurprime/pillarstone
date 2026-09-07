@@ -81,3 +81,34 @@ export function getYouTubeEmbedUrl(url: string | null | undefined): string | nul
   const id = getYouTubeVideoId(url)
   return id ? `https://www.youtube-nocookie.com/embed/${id}` : null
 }
+
+const YOUTUBE_AMENITY_PREFIX = '__yt__:'
+
+export function youtubeUrlFromProperty(row: {
+  youtube_url?: string | null
+  amenities?: string[] | null
+}): string | null {
+  const direct = row.youtube_url?.trim()
+  if (direct) return direct
+  const encoded = (row.amenities ?? []).find((item) => item.startsWith(YOUTUBE_AMENITY_PREFIX))
+  const url = encoded?.slice(YOUTUBE_AMENITY_PREFIX.length).trim()
+  return url || null
+}
+
+export function amenitiesWithYoutubeUrl(
+  amenities: string[] | null | undefined,
+  youtubeUrl: string | null,
+): string[] {
+  const rest = (amenities ?? []).filter((item) => !item.startsWith(YOUTUBE_AMENITY_PREFIX))
+  if (!youtubeUrl) return rest
+  return [...rest, `${YOUTUBE_AMENITY_PREFIX}${youtubeUrl}`]
+}
+
+export function isMissingYoutubeUrlColumn(error: { code?: string; message?: string } | null | undefined): boolean {
+  if (!error) return false
+  return error.code === 'PGRST204' || error.code === '42703' || /youtube_url/i.test(error.message ?? '')
+}
+
+export function visiblePropertyFeatures(names: string[]): string[] {
+  return names.filter((name) => !name.startsWith(YOUTUBE_AMENITY_PREFIX))
+}

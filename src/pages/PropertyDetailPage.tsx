@@ -8,7 +8,7 @@ import PropertyCard from '../components/PropertyCard'
 import LoadingSkeleton from '../components/LoadingSkeleton'
 import EmptyState from '../components/EmptyState'
 import type { Property } from '../lib/types'
-import { formatPrice, getLocationString, formatDate, getYouTubeEmbedUrl, getYouTubeThumbnailUrl } from '../lib/utils'
+import { formatPrice, getLocationString, formatDate, getYouTubeEmbedUrl, getYouTubeThumbnailUrl, visiblePropertyFeatures } from '../lib/utils'
 import YouTubePlayOverlay from '../components/YouTubePlayOverlay'
 
 export default function PropertyDetailPage() {
@@ -123,7 +123,9 @@ export default function PropertyDetailPage() {
   }
 
   const images = property.property_images?.sort((a, b) => a.sort_order - b.sort_order) ?? []
-  const features = (property as any).property_feature_links?.map((l: any) => l.property_features?.name).filter(Boolean) ?? property.features ?? []
+  const features = visiblePropertyFeatures(
+    (property as any).property_feature_links?.map((l: any) => l.property_features?.name).filter(Boolean) ?? property.features ?? [],
+  )
   const location = getLocationString(property)
   const isForRent = property.listing_type === 'rent'
   const hasWhatsapp = !!resolveWhatsappNumber(property, siteWhatsapp)
