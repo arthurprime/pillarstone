@@ -48,6 +48,8 @@ export default function Footer({ settings }: FooterProps) {
               <li><Link to="/rent" className="hover:text-warm-white transition-colors">Rent</Link></li>
               <li><Link to="/land" className="hover:text-warm-white transition-colors">Land</Link></li>
               <li><Link to="/developments" className="hover:text-warm-white transition-colors">Developments</Link></li>
+              <li><Link to="/construction" className="hover:text-warm-white transition-colors">Construction</Link></li>
+              <li><Link to="/interiors" className="hover:text-warm-white transition-colors">Interiors</Link></li>
             </ul>
           </div>
 

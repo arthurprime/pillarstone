@@ -40,7 +40,7 @@ export default function ContactPage() {
         <div className="max-w-site container-px">
           <p className="text-xs tracking-[0.2em] uppercase text-stone-400 mb-2">Contact</p>
           <h1 className="font-display text-4xl md:text-5xl">Get in touch</h1>
-          <p className="text-stone-300 mt-4 max-w-lg">We're here to help you find your next property. Reach out with any questions and our team will respond promptly.</p>
+          <p className="text-stone-300 mt-4 max-w-lg">Questions about a listing, a construction project, or an interior — write to us and the team will respond promptly.</p>
         </div>
       </section>
 
@@ -112,7 +112,13 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <label className="block text-xs tracking-wide uppercase text-stone-500 mb-1">Subject</label>
-                    <input type="text" value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} className="w-full px-3 py-2 border border-stone-300 text-sm focus:outline-none focus:border-ink-700" />
+                    <select value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} className="w-full px-3 py-2 border border-stone-300 text-sm focus:outline-none focus:border-ink-700 bg-warm-white">
+                      <option value="">Select a topic</option>
+                      <option value="Property inquiry">Property inquiry</option>
+                      <option value="Construction consultation">Construction</option>
+                      <option value="Interior design consultation">Interiors</option>
+                      <option value="Other">Other</option>
+                    </select>
                   </div>
                 </div>
                 <div>

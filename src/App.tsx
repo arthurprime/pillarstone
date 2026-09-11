@@ -11,6 +11,8 @@ import CategoryPage from './pages/CategoryPage'
 import DevelopmentsPage from './pages/DevelopmentsPage'
 import DevelopmentDetailPage from './pages/DevelopmentDetailPage'
 import AboutPage from './pages/AboutPage'
+import ConstructionPage from './pages/ConstructionPage'
+import InteriorPage from './pages/InteriorPage'
 import ContactPage from './pages/ContactPage'
 import FavoritesPage from './pages/FavoritesPage'
 import SellPage from './pages/SellPage'
@@ -76,6 +78,9 @@ export default function App() {
                   <Route path="/developments" element={<DevelopmentsPage />} />
                   <Route path="/development/:slug" element={<DevelopmentDetailPage />} />
                   <Route path="/about" element={<AboutPage />} />
+                  <Route path="/construction" element={<ConstructionPage />} />
+                  <Route path="/interiors" element={<InteriorPage />} />
+                  <Route path="/interior" element={<Navigate to="/interiors" replace />} />
                   <Route path="/contact" element={<ContactPage />} />
                   <Route path="/favorites" element={<FavoritesPage />} />
                   <Route path="/login" element={<Navigate to="/admin" replace />} />

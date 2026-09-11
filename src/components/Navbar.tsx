@@ -10,6 +10,8 @@ const navLinks = [
   { label: 'Sell', to: '/sell' },
   { label: 'Land', to: '/land' },
   { label: 'Developments', to: '/developments' },
+  { label: 'Construction', to: '/construction' },
+  { label: 'Interiors', to: '/interiors' },
   { label: 'About', to: '/about' },
 ]
 
@@ -49,7 +51,7 @@ export default function Navbar() {
               <Logo />
             </Link>
 
-            <nav className="hidden lg:flex items-center gap-8">
+            <nav className="hidden xl:flex items-center gap-6">
               {navLinks.map(link => (
                 <NavLink
                   key={link.to}
@@ -65,7 +67,7 @@ export default function Navbar() {
               ))}
             </nav>
 
-            <div className="hidden lg:flex items-center gap-5">
+            <div className="hidden xl:flex items-center gap-5">
               <Link to="/contact" className="text-sm tracking-wide text-stone-300 hover:text-warm-white transition-colors">
                 Contact
               </Link>
@@ -75,7 +77,7 @@ export default function Navbar() {
             </div>
 
             <button
-              className="lg:hidden text-warm-white"
+              className="xl:hidden text-warm-white"
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
             >
@@ -86,7 +88,7 @@ export default function Navbar() {
       </header>
 
       {mobileOpen && (
-        <div className="fixed inset-0 z-[60] lg:hidden">
+        <div className="fixed inset-0 z-[60] xl:hidden">
           <div className="absolute inset-0 bg-ink-950/50" onClick={() => setMobileOpen(false)} />
           <div className="absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-warm-white overflow-y-auto animate-slide-in-right">
             <div className="flex items-center justify-between px-6 h-16 border-b border-stone-200">

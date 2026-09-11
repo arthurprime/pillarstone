@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Search, ArrowRight, MapPin, Building2 } from 'lucide-react'
+import { Search, ArrowRight, MapPin, Building2, HardHat, Sofa } from 'lucide-react'
 import PropertyCard from '../components/PropertyCard'
 import DevelopmentCard from '../components/DevelopmentCard'
 import LoadingSkeleton from '../components/LoadingSkeleton'
@@ -75,7 +75,7 @@ export default function HomePage() {
               {hero.title ?? 'Find a place worth coming home to.'}
             </h1>
             <p className="text-lg text-stone-200 mb-8 max-w-lg animate-fade-up" style={{ animationDelay: '0.1s' }}>
-              {hero.subtitle ?? 'Homes, land and properties selected with care.'}
+              {hero.subtitle ?? 'Real estate, construction, and interiors — selected and built with care.'}
             </p>
             <div className="flex gap-3 mb-8 animate-fade-up" style={{ animationDelay: '0.2s' }}>
               <Link
@@ -89,6 +89,12 @@ export default function HomePage() {
                 className="px-6 py-3 border border-warm-white/40 text-warm-white text-sm tracking-wide hover:bg-warm-white/10 transition-colors"
               >
                 {hero.cta_rent_label ?? 'Rent'}
+              </Link>
+              <Link
+                to="/construction"
+                className="px-6 py-3 border border-warm-white/40 text-warm-white text-sm tracking-wide hover:bg-warm-white/10 transition-colors"
+              >
+                Construction
               </Link>
             </div>
           </div>
@@ -174,6 +180,42 @@ export default function HomePage() {
                 <span className="text-sm font-medium text-ink-700 group-hover:text-ink-900">{t.name}</span>
               </Link>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SERVICES */}
+      <section className="py-20">
+        <div className="max-w-site container-px">
+          <div className="text-center mb-12">
+            <p className="text-xs tracking-[0.2em] uppercase text-stone-500 mb-2">What we do</p>
+            <h2 className="font-display text-3xl md:text-4xl text-ink-900">Real estate, construction, interiors</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Link to="/properties" className="group border border-stone-200 p-8 bg-warm-white hover:border-ink-300 transition-colors">
+              <Building2 size={28} className="text-stone-400 group-hover:text-ink-700 transition-colors mb-4" />
+              <h3 className="font-display text-2xl text-ink-900 mb-3">Real Estate</h3>
+              <p className="text-sm text-stone-500 leading-relaxed mb-6">Homes, land, and commercial properties selected with care — to buy, rent, or list.</p>
+              <span className="inline-flex items-center gap-2 text-sm text-ink-900 group-hover:gap-3 transition-all">
+                Browse properties <ArrowRight size={16} />
+              </span>
+            </Link>
+            <Link to="/construction" className="group border border-stone-200 p-8 bg-warm-white hover:border-ink-300 transition-colors">
+              <HardHat size={28} className="text-stone-400 group-hover:text-ink-700 transition-colors mb-4" />
+              <h3 className="font-display text-2xl text-ink-900 mb-3">Construction</h3>
+              <p className="text-sm text-stone-500 leading-relaxed mb-6">New builds, renovations, and project management from drawings through handover.</p>
+              <span className="inline-flex items-center gap-2 text-sm text-ink-900 group-hover:gap-3 transition-all">
+                View construction <ArrowRight size={16} />
+              </span>
+            </Link>
+            <Link to="/interiors" className="group border border-stone-200 p-8 bg-warm-white hover:border-ink-300 transition-colors">
+              <Sofa size={28} className="text-stone-400 group-hover:text-ink-700 transition-colors mb-4" />
+              <h3 className="font-display text-2xl text-ink-900 mb-3">Interiors</h3>
+              <p className="text-sm text-stone-500 leading-relaxed mb-6">Interior design, space planning, and turnkey fit-out for homes and workplaces.</p>
+              <span className="inline-flex items-center gap-2 text-sm text-ink-900 group-hover:gap-3 transition-all">
+                View interiors <ArrowRight size={16} />
+              </span>
+            </Link>
           </div>
         </div>
       </section>
