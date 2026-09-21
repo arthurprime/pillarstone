@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Plus, Pencil, Trash2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Plus, Pencil, Trash2, ExternalLink } from 'lucide-react'
 import { supabase, STORAGE_BUCKETS, getPublicImageUrl } from '../../lib/supabase'
 import { useToast } from '../../components/Toast'
 import Modal from '../../components/Modal'
@@ -13,7 +14,7 @@ const emptyForm = {
   description: '',
   location: '',
   image_path: '',
-  status: 'draft',
+  status: 'published',
   sort_order: '0',
 }
 
@@ -84,35 +85,52 @@ export default function AdminServiceProjects() {
     setUploading(true)
     const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg'
     const path = `service-projects/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-    const { error } = await supabase.storage.from(STORAGE_BUCKETS.SITE_ASSETS).upload(path, file, {
+
+    let bucket: string = STORAGE_BUCKETS.SITE_ASSETS
+    let { error } = await supabase.storage.from(STORAGE_BUCKETS.SITE_ASSETS).upload(path, file, {
       cacheControl: '3600',
       upsert: false,
       contentType: file.type || 'image/jpeg',
     })
+
+    if (error) {
+      const fb = await supabase.storage.from(STORAGE_BUCKETS.PROPERTY_IMAGES).upload(path, file, {
+        cacheControl: '3600',
+        upsert: false,
+        contentType: file.type || 'image/jpeg',
+      })
+      if (!fb.error) {
+        error = null
+        bucket = STORAGE_BUCKETS.PROPERTY_IMAGES
+      }
+    }
+
     setUploading(false)
     if (error) {
       toast(`Could not upload: ${error.message}`, 'error')
       return
     }
-    setForm(prev => ({ ...prev, image_path: getPublicImageUrl(STORAGE_BUCKETS.SITE_ASSETS, path) }))
+    setForm(prev => ({ ...prev, image_path: getPublicImageUrl(bucket, path) }))
+    toast('Image uploaded successfully.', 'success')
   }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
-    if (!form.title) {
+    if (!form.title.trim()) {
       toast('Title is required.', 'error')
       return
     }
-    const slug = form.slug || slugify(form.title)
+    const slug = form.slug.trim() || slugify(form.title)
     const payload: Record<string, unknown> = {
       category: form.category,
-      title: form.title,
+      title: form.title.trim(),
       slug,
-      description: form.description || null,
-      location: form.location || null,
-      image_path: form.image_path || null,
+      description: form.description?.trim() || null,
+      location: form.location?.trim() || null,
+      image_path: form.image_path?.trim() || null,
       status: form.status,
       sort_order: Number(form.sort_order) || 0,
+      updated_at: new Date().toISOString(),
     }
     if (form.status === 'published') {
       payload.published_at = editing?.published_at ?? new Date().toISOString()
@@ -126,7 +144,7 @@ export default function AdminServiceProjects() {
       toast(error.message, 'error')
       return
     }
-    toast('Project saved. Published items appear on Construction or Interiors.', 'success')
+    toast('Project saved! It is now live on the main website.', 'success')
     setShowForm(false)
     loadProjects()
   }
@@ -146,16 +164,38 @@ export default function AdminServiceProjects() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
-        <h2 className="font-display text-2xl text-ink-900">Construction & Interior Projects</h2>
-        <button onClick={openNew} className="flex items-center gap-2 px-4 py-2 bg-ink-900 text-warm-white text-sm hover:bg-ink-800">
+      <div className="flex items-center justify-between mb-4 gap-4 flex-wrap">
+        <div>
+          <h2 className="font-display text-2xl text-ink-900">Construction & Interior Projects</h2>
+          <p className="text-sm text-stone-500 mt-1">
+            Upload and manage projects here. All published projects appear automatically on the main website.
+          </p>
+        </div>
+        <button onClick={openNew} className="flex items-center gap-2 px-4 py-2 bg-ink-900 text-warm-white text-sm hover:bg-ink-800 transition-colors">
           <Plus size={16} /> Add Project
         </button>
       </div>
 
-      <p className="text-sm text-stone-500 mb-4">
-        Published construction projects appear on the Construction page. Interior projects appear on Interiors.
-      </p>
+      <div className="flex items-center gap-3 mb-6 flex-wrap">
+        <Link
+          to="/construction"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-xs text-stone-600 hover:text-ink-900 bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded transition-colors"
+        >
+          <span>View Construction page on main website</span>
+          <ExternalLink size={12} />
+        </Link>
+        <Link
+          to="/interiors"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-xs text-stone-600 hover:text-ink-900 bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded transition-colors"
+        >
+          <span>View Interiors page on main website</span>
+          <ExternalLink size={12} />
+        </Link>
+      </div>
 
       <div className="flex gap-2 mb-4">
         {(['all', 'construction', 'interior'] as const).map(key => (
@@ -163,7 +203,7 @@ export default function AdminServiceProjects() {
             key={key}
             type="button"
             onClick={() => setFilter(key)}
-            className={`px-3 py-1.5 text-sm capitalize ${filter === key ? 'bg-ink-900 text-warm-white' : 'border border-stone-300 text-ink-700'}`}
+            className={`px-3 py-1.5 text-sm capitalize transition-colors ${filter === key ? 'bg-ink-900 text-warm-white' : 'border border-stone-300 text-ink-700 hover:bg-stone-100'}`}
           >
             {key}
           </button>

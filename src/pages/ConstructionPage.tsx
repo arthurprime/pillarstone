@@ -1,15 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { HardHat, Building2, Hammer, ClipboardList, Layers, Home, Plus, ExternalLink } from 'lucide-react'
+import { HardHat, Building2, Hammer, ClipboardList, Layers, Home } from 'lucide-react'
 import ServiceInquiryForm from '../components/ServiceInquiryForm'
 import ServiceProjectGrid from '../components/ServiceProjectGrid'
 import PageHero from '../components/PageHero'
 import Seo from '../components/Seo'
-import Modal from '../components/Modal'
-import AdminProjectModal from '../components/AdminProjectModal'
-import { useAuth } from '../lib/auth'
-import { useToast } from '../components/Toast'
-import { supabase } from '../lib/supabase'
 import { getServiceProjects } from '../lib/data'
 import { HERO_IMAGES, PAGE_SEO } from '../lib/pageContent'
 import type { ServiceProject } from '../lib/types'
@@ -48,34 +42,11 @@ const offerings = [
 ]
 
 export default function ConstructionPage() {
-  const { profile } = useAuth()
-  const { toast } = useToast()
-  const isStaff = profile?.role === 'admin' || profile?.role === 'editor'
-
   const [projects, setProjects] = useState<ServiceProject[]>([])
-  const [modalOpen, setModalOpen] = useState(false)
-  const [projectToEdit, setProjectToEdit] = useState<ServiceProject | null>(null)
-  const [deleteTarget, setDeleteTarget] = useState<ServiceProject | null>(null)
-
-  function loadProjects() {
-    getServiceProjects('construction').then(setProjects)
-  }
 
   useEffect(() => {
-    loadProjects()
+    getServiceProjects('construction').then(setProjects)
   }, [])
-
-  async function handleDelete() {
-    if (!deleteTarget) return
-    const { error } = await supabase.from('service_projects').delete().eq('id', deleteTarget.id)
-    if (error) {
-      toast('Could not delete project.', 'error')
-    } else {
-      toast('Project deleted successfully.', 'success')
-      setDeleteTarget(null)
-      loadProjects()
-    }
-  }
 
   return (
     <div>
@@ -111,97 +82,19 @@ export default function ConstructionPage() {
 
       <section className="py-20 bg-stone-50">
         <div className="max-w-site container-px">
-          <div className="flex items-center justify-between mb-12 flex-wrap gap-4">
-            <div className="max-w-2xl">
-              <p className="text-xs tracking-[0.2em] uppercase text-stone-500 mb-2">Completed work</p>
-              <h2 className="font-display text-3xl md:text-4xl text-ink-900 mb-4">Construction projects</h2>
-              <p className="text-ink-500 leading-relaxed">
-                Recent builds and renovations in Kigali and across Rwanda.
-              </p>
-            </div>
-
-            {isStaff && (
-              <div className="flex items-center gap-3 p-3 bg-warm-white border border-stone-300 shadow-sm rounded">
-                <span className="text-[11px] uppercase tracking-wider text-ink-700 font-semibold px-2 py-0.5 bg-stone-100 rounded">
-                  Admin
-                </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setProjectToEdit(null)
-                    setModalOpen(true)
-                  }}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-ink-900 hover:bg-ink-800 text-warm-white text-xs tracking-wider uppercase font-medium transition-colors"
-                >
-                  <Plus size={14} />
-                  <span>Upload Project</span>
-                </button>
-                <Link
-                  to="/admin/projects"
-                  className="flex items-center gap-1 px-3 py-2 border border-stone-300 hover:border-ink-900 text-xs text-ink-700 transition-colors"
-                >
-                  <span>Dashboard</span>
-                  <ExternalLink size={12} />
-                </Link>
-              </div>
-            )}
+          <div className="max-w-2xl mb-12">
+            <p className="text-xs tracking-[0.2em] uppercase text-stone-500 mb-2">Completed work</p>
+            <h2 className="font-display text-3xl md:text-4xl text-ink-900 mb-4">Construction projects</h2>
+            <p className="text-ink-500 leading-relaxed">
+              Recent builds and renovations in Kigali and across Rwanda.
+            </p>
           </div>
-
           <ServiceProjectGrid
             projects={projects}
             emptyHint="New construction projects will appear here once they are published."
-            isAdmin={isStaff}
-            onEdit={p => {
-              setProjectToEdit(p)
-              setModalOpen(true)
-            }}
-            onDelete={p => setDeleteTarget(p)}
           />
         </div>
       </section>
-
-      {/* Admin Project Upload / Edit Modal */}
-      {isStaff && (
-        <>
-          <AdminProjectModal
-            open={modalOpen}
-            onClose={() => {
-              setModalOpen(false)
-              setProjectToEdit(null)
-            }}
-            onSaved={loadProjects}
-            defaultCategory="construction"
-            projectToEdit={projectToEdit}
-          />
-
-          <Modal
-            open={!!deleteTarget}
-            onClose={() => setDeleteTarget(null)}
-            title="Delete Project"
-            size="sm"
-          >
-            <p className="text-sm text-stone-600 mb-6">
-              Delete “{deleteTarget?.title}”? This project will be permanently removed from the website.
-            </p>
-            <div className="flex gap-3 justify-end">
-              <button
-                type="button"
-                onClick={() => setDeleteTarget(null)}
-                className="px-4 py-2 border border-stone-300 text-sm hover:bg-stone-100"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleDelete}
-                className="px-4 py-2 bg-red-600 text-warm-white text-sm hover:bg-red-700"
-              >
-                Delete
-              </button>
-            </div>
-          </Modal>
-        </>
-      )}
 
       <section className="py-20">
         <div className="max-w-site container-px">

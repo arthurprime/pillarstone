@@ -12,7 +12,7 @@ const navItems = [
   { to: '/admin', label: 'Overview', icon: LayoutDashboard, end: true },
   { to: '/admin/properties', label: 'Properties', icon: Building2 },
   { to: '/admin/developments', label: 'Developments', icon: Building },
-  { to: '/admin/projects', label: 'Projects', icon: HardHat },
+  { to: '/admin/projects', label: 'Construction & Interiors', icon: HardHat },
   { to: '/admin/agents', label: 'Agents', icon: Users },
   { to: '/admin/locations', label: 'Locations', icon: MapPin },
   { to: '/admin/inquiries', label: 'Inquiries', icon: Mail },
