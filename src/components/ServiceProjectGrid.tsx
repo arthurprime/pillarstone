@@ -1,4 +1,5 @@
 import type { ServiceProject } from '../lib/types'
+import LazyImage from './LazyImage'
 
 export default function ServiceProjectGrid({
   projects,
@@ -18,14 +19,12 @@ export default function ServiceProjectGrid({
       {projects.map(project => (
         <article key={project.id} className="bg-warm-white border border-stone-200 overflow-hidden hover:border-stone-400 transition-colors">
           {project.image_path && (
-            <div className="aspect-[4/3] overflow-hidden bg-stone-100">
-              <img
-                src={project.image_path}
-                alt={project.title}
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 ease-out"
-                loading="lazy"
-              />
-            </div>
+            <LazyImage
+              src={project.image_path}
+              alt={project.title}
+              wrapperClassName="aspect-[4/3]"
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 ease-out"
+            />
           )}
           <div className="p-6">
             {project.location && (

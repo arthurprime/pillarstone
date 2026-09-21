@@ -5,6 +5,7 @@ import { supabase, STORAGE_BUCKETS, getPublicImageUrl } from '../../lib/supabase
 import { useToast } from '../../components/Toast'
 import Modal from '../../components/Modal'
 import { slugify } from '../../lib/utils'
+import { compressImage } from '../../lib/imageUtils'
 import type { ServiceProject } from '../../lib/types'
 
 const emptyForm = {
@@ -73,31 +74,47 @@ export default function AdminServiceProjects() {
     setShowForm(true)
   }
 
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'compressing' | 'uploading'>('idle')
+
   async function handleUpload(file: File) {
     if (!file.type.startsWith('image/')) {
       toast('Please choose an image file.', 'error')
       return
     }
-    if (file.size > 10 * 1024 * 1024) {
-      toast('Image must be under 10MB.', 'error')
+    if (file.size > 30 * 1024 * 1024) {
+      toast('Image must be under 30MB.', 'error')
       return
     }
+
     setUploading(true)
-    const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg'
+    setUploadStatus('compressing')
+
+    let compressed: File
+    try {
+      compressed = await compressImage(file, { maxWidth: 1600, maxHeight: 1200, quality: 0.82 })
+    } catch {
+      toast('Could not process the image. Try a different file.', 'error')
+      setUploading(false)
+      setUploadStatus('idle')
+      return
+    }
+
+    setUploadStatus('uploading')
+    const ext = 'jpg'
     const path = `service-projects/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
 
     let bucket: string = STORAGE_BUCKETS.SITE_ASSETS
-    let { error } = await supabase.storage.from(STORAGE_BUCKETS.SITE_ASSETS).upload(path, file, {
-      cacheControl: '3600',
+    let { error } = await supabase.storage.from(STORAGE_BUCKETS.SITE_ASSETS).upload(path, compressed, {
+      cacheControl: '31536000',
       upsert: false,
-      contentType: file.type || 'image/jpeg',
+      contentType: 'image/jpeg',
     })
 
     if (error) {
-      const fb = await supabase.storage.from(STORAGE_BUCKETS.PROPERTY_IMAGES).upload(path, file, {
-        cacheControl: '3600',
+      const fb = await supabase.storage.from(STORAGE_BUCKETS.PROPERTY_IMAGES).upload(path, compressed, {
+        cacheControl: '31536000',
         upsert: false,
-        contentType: file.type || 'image/jpeg',
+        contentType: 'image/jpeg',
       })
       if (!fb.error) {
         error = null
@@ -106,6 +123,7 @@ export default function AdminServiceProjects() {
     }
 
     setUploading(false)
+    setUploadStatus('idle')
     if (error) {
       toast(`Could not upload: ${error.message}`, 'error')
       return
@@ -308,7 +326,19 @@ export default function AdminServiceProjects() {
               }}
               className="block w-full text-sm text-stone-600 mb-2"
             />
-            {uploading && <p className="text-xs text-stone-500 mb-2">Uploading…</p>}
+            {uploadStatus === 'compressing' && (
+              <p className="text-xs text-amber-600 mb-2 flex items-center gap-1.5">
+                <span className="inline-block w-3 h-3 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+                Compressing image…
+              </p>
+            )}
+            {uploadStatus === 'uploading' && (
+              <p className="text-xs text-blue-600 mb-2 flex items-center gap-1.5">
+                <span className="inline-block w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                Uploading…
+              </p>
+            )}
+
             <input
               type="text"
               value={form.image_path}

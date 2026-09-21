@@ -7,6 +7,7 @@ import { getPropertyPrimaryImage } from '../lib/data'
 import FavoriteButton from './FavoriteButton'
 import YouTubePlayOverlay from './YouTubePlayOverlay'
 import { YouTubeLightbox } from './YouTubePlayer'
+import LazyImage from './LazyImage'
 
 interface PropertyCardProps {
   property: Property
@@ -25,11 +26,11 @@ export default function PropertyCard({ property }: PropertyCardProps) {
       <Link to={`/property/${property.slug}`} className="group block bg-warm-white border border-stone-200 hover:border-stone-400 hover:-translate-y-1 hover:soft-shadow transition-all duration-300">
         <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
           {image ? (
-            <img
+            <LazyImage
               src={image}
               alt={property.title}
+              wrapperClassName="w-full h-full"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-              loading="lazy"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-stone-400">
