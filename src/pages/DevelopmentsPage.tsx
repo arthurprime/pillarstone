@@ -6,6 +6,9 @@ import DevelopmentCard from '../components/DevelopmentCard'
 import LoadingSkeleton from '../components/LoadingSkeleton'
 import EmptyState from '../components/EmptyState'
 import type { Development } from '../lib/types'
+import PageHero from '../components/PageHero'
+import Seo from '../components/Seo'
+import { HERO_IMAGES, PAGE_SEO } from '../lib/pageContent'
 
 export default function DevelopmentsPage() {
   const [developments, setDevelopments] = useState<Development[]>([])
@@ -17,13 +20,14 @@ export default function DevelopmentsPage() {
 
   return (
     <div>
-      <section className="bg-ink-950 text-warm-white py-16">
-        <div className="max-w-site container-px">
-          <p className="text-xs tracking-[0.2em] uppercase text-stone-400 mb-2">Browse</p>
-          <h1 className="font-display text-4xl md:text-5xl">Developments</h1>
-          <p className="text-stone-300 mt-4 max-w-lg">Explore our featured residential and commercial developments, each designed with care and built to last.</p>
-        </div>
-      </section>
+      <Seo {...PAGE_SEO.developments} />
+      <PageHero
+        eyebrow="New developments"
+        title="Residential and commercial developments in Kigali"
+        description="Explore housing and mixed-use projects in Kigali — unit types, starting prices and amenities."
+        image={HERO_IMAGES.developments}
+        imageAlt="Property development in Kigali"
+      />
 
       <section className="py-12">
         <div className="max-w-site container-px">

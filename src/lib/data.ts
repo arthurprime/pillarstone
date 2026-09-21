@@ -4,7 +4,7 @@ import type {
   Property, PropertyType, PropertyFeature, Location, Agent,
   PropertyImage, Development, DevelopmentUnit, Article, ArticleCategory,
   Inquiry, Favorite, SellRequest, SiteContent, SiteSetting,
-  PropertySearchParams,
+  PropertySearchParams, ServiceProject,
 } from './types'
 
 function withYoutubeUrl<T extends { youtube_url?: string | null; amenities?: string[] | null }>(row: T): T {
@@ -384,6 +384,23 @@ export async function submitSellRequest(req: {
 }): Promise<{ error: string | null }> {
   const { error } = await supabase.from('sell_requests').insert(req)
   return { error: error?.message ?? null }
+}
+
+// ============ SERVICE PROJECTS ============
+
+export async function getServiceProjects(category: 'construction' | 'interior'): Promise<ServiceProject[]> {
+  const { data, error } = await supabase
+    .from('service_projects')
+    .select('*')
+    .eq('category', category)
+    .eq('status', 'published')
+    .order('sort_order', { ascending: true })
+    .order('published_at', { ascending: false })
+  if (error) {
+    console.error(error)
+    return []
+  }
+  return (data as ServiceProject[]) ?? []
 }
 
 // ============ SITE CONTENT ============

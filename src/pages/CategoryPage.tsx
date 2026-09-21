@@ -5,8 +5,11 @@ import PropertyCard from '../components/PropertyCard'
 import LoadingSkeleton from '../components/LoadingSkeleton'
 import EmptyState from '../components/EmptyState'
 import Pagination from '../components/Pagination'
+import PageHero from '../components/PageHero'
+import Seo from '../components/Seo'
 import { getProperties, getPropertyTypes } from '../lib/data'
 import type { Property, PropertyType } from '../lib/types'
+import { HERO_IMAGES } from '../lib/pageContent'
 
 const PAGE_SIZE = 12
 
@@ -14,9 +17,13 @@ interface CategoryPageProps {
   listing?: string
   type?: string
   title: string
+  description?: string
+  eyebrow?: string
+  image?: string
+  seo?: { title: string; description: string; keywords?: string }
 }
 
-export default function CategoryPage({ listing, type, title }: CategoryPageProps) {
+export default function CategoryPage({ listing, type, title, description, eyebrow, image, seo }: CategoryPageProps) {
   const [searchParams, setSearchParams] = useSearchParams()
   const [properties, setProperties] = useState<Property[]>([])
   const [total, setTotal] = useState(0)
@@ -78,12 +85,18 @@ export default function CategoryPage({ listing, type, title }: CategoryPageProps
 
   return (
     <div>
-      <section className="bg-ink-950 text-warm-white py-16">
-        <div className="max-w-site container-px">
-          <p className="text-xs tracking-[0.2em] uppercase text-stone-400 mb-2">Browse</p>
-          <h1 className="font-display text-4xl md:text-5xl">{title}</h1>
-        </div>
-      </section>
+      <Seo
+        title={seo?.title ?? title}
+        description={seo?.description ?? description ?? `Browse ${title.toLowerCase()} with Pillarstone in Kigali and Rwanda.`}
+        keywords={seo?.keywords}
+      />
+      <PageHero
+        eyebrow={eyebrow ?? 'Browse'}
+        title={title}
+        description={description}
+        image={image ?? HERO_IMAGES.properties}
+        imageAlt={title}
+      />
 
       <section className="py-10">
         <div className="max-w-site container-px">

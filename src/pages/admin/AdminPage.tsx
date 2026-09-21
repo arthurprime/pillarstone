@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Building2, Mail, Users, Building, CheckCircle, Clock, DollarSign } from 'lucide-react'
+import { Building2, Mail, Users, Building, CheckCircle, Clock, DollarSign, HardHat } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 
 interface Stats {
@@ -10,6 +10,7 @@ interface Stats {
   forSale: number
   forRent: number
   developments: number
+  projects: number
   inquiries: number
   users: number
 }
@@ -20,7 +21,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     async function loadStats() {
-      const [props, pubs, drafts, sale, rent, devs, inq, users] = await Promise.all([
+      const [props, pubs, drafts, sale, rent, devs, inq, users, projs] = await Promise.all([
         supabase.from('properties').select('*', { count: 'exact', head: true }),
         supabase.from('properties').select('*', { count: 'exact', head: true }).eq('status', 'published'),
         supabase.from('properties').select('*', { count: 'exact', head: true }).eq('status', 'draft'),
@@ -29,6 +30,7 @@ export default function AdminPage() {
         supabase.from('developments').select('*', { count: 'exact', head: true }),
         supabase.from('inquiries').select('*', { count: 'exact', head: true }),
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
+        supabase.from('service_projects').select('*', { count: 'exact', head: true }),
       ])
       setStats({
         totalProperties: props.count ?? 0,
@@ -37,6 +39,7 @@ export default function AdminPage() {
         forSale: sale.count ?? 0,
         forRent: rent.count ?? 0,
         developments: devs.count ?? 0,
+        projects: projs.count ?? 0,
         inquiries: inq.count ?? 0,
         users: users.count ?? 0,
       })
@@ -56,8 +59,8 @@ export default function AdminPage() {
     { label: 'For Sale', value: stats.forSale, icon: DollarSign, link: '/admin/properties' },
     { label: 'For Rent', value: stats.forRent, icon: Building2, link: '/admin/properties' },
     { label: 'Developments', value: stats.developments, icon: Building, link: '/admin/developments' },
+    { label: 'Projects (Build/Design)', value: stats.projects, icon: HardHat, link: '/admin/projects' },
     { label: 'Inquiries', value: stats.inquiries, icon: Mail, link: '/admin/inquiries' },
-    { label: 'Users', value: stats.users, icon: Users, link: '/admin/users' },
   ]
 
   return (
@@ -83,6 +86,7 @@ export default function AdminPage() {
         <h3 className="font-display text-lg text-ink-900 mb-4">Quick Actions</h3>
         <div className="flex flex-wrap gap-3">
           <Link to="/admin/properties/new" className="px-4 py-2 bg-ink-900 text-warm-white text-sm hover:bg-ink-800 transition-colors">Add Property</Link>
+          <Link to="/admin/projects" className="px-4 py-2 bg-ink-900 text-warm-white text-sm hover:bg-ink-800 transition-colors">Manage Build & Interior Projects</Link>
           <Link to="/admin/inquiries" className="px-4 py-2 border border-stone-300 text-sm text-ink-700 hover:bg-stone-100 transition-colors">View Inquiries</Link>
         </div>
       </div>

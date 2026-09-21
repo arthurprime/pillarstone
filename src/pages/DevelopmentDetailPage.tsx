@@ -4,6 +4,7 @@ import { MapPin, ArrowLeft, Check, Calendar, Maximize, Bed, Bath } from 'lucide-
 import { getDevelopmentBySlug } from '../lib/data'
 import LoadingSkeleton from '../components/LoadingSkeleton'
 import EmptyState from '../components/EmptyState'
+import Seo from '../components/Seo'
 import { formatPrice } from '../lib/utils'
 import type { Development } from '../lib/types'
 
@@ -31,6 +32,15 @@ export default function DevelopmentDetailPage() {
 
   return (
     <div className="pt-20">
+      <Seo
+        title={`${dev.name} | New Developments in Kigali | Pillarstone`}
+        description={
+          dev.description
+            ? dev.description.slice(0, 155).trim()
+            : `Explore ${dev.name}, premium new development in ${location || 'Kigali, Rwanda'}. Starting prices, floor plans and units with Pillarstone.`
+        }
+        keywords={`${dev.name}, developments Kigali, off plan property Rwanda, new apartments Kigali, real estate Rwanda`}
+      />
       <div className="max-w-site container-px py-4">
         <Link to="/developments" className="flex items-center gap-2 text-sm text-stone-500 hover:text-ink-900 transition-colors">
           <ArrowLeft size={16} /> Back to developments

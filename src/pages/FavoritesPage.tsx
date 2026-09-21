@@ -6,6 +6,9 @@ import PropertyCard from '../components/PropertyCard'
 import LoadingSkeleton from '../components/LoadingSkeleton'
 import EmptyState from '../components/EmptyState'
 import type { Property } from '../lib/types'
+import PageHero from '../components/PageHero'
+import Seo from '../components/Seo'
+import { HERO_IMAGES, PAGE_SEO } from '../lib/pageContent'
 
 export default function FavoritesPage() {
   const [properties, setProperties] = useState<Property[]>([])
@@ -25,14 +28,15 @@ export default function FavoritesPage() {
   }, [])
 
   return (
-    <div className="pt-20">
-      <section className="bg-ink-950 text-warm-white py-16">
-        <div className="max-w-site container-px">
-          <p className="text-xs tracking-[0.2em] uppercase text-stone-400 mb-2">Saved</p>
-          <h1 className="font-display text-4xl md:text-5xl">Saved properties</h1>
-          <p className="text-stone-400 mt-2 text-sm">Kept on this device. No account needed.</p>
-        </div>
-      </section>
+    <div>
+      <Seo {...PAGE_SEO.favorites} />
+      <PageHero
+        eyebrow="Saved on this device"
+        title="Saved properties"
+        description="Kept on this device. No account needed."
+        image={HERO_IMAGES.favorites}
+        imageAlt="Saved homes"
+      />
 
       <section className="py-12">
         <div className="max-w-site container-px">

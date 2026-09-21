@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { submitSellRequest, getPropertyTypes } from '../lib/data'
 import { useToast } from '../components/Toast'
 import type { PropertyType } from '../lib/types'
+import PageHero from '../components/PageHero'
+import Seo from '../components/Seo'
+import { HERO_IMAGES, PAGE_SEO } from '../lib/pageContent'
 
 export default function SellPage() {
   const { toast } = useToast()
@@ -54,14 +57,15 @@ export default function SellPage() {
   }
 
   return (
-    <div className="pt-20">
-      <section className="bg-ink-950 text-warm-white py-16">
-        <div className="max-w-site container-px">
-          <p className="text-xs tracking-[0.2em] uppercase text-stone-400 mb-2">Sell</p>
-          <h1 className="font-display text-4xl md:text-5xl">Sell Your Property</h1>
-          <p className="text-stone-300 mt-4 max-w-lg">Tell us about your property and our team will review your request and get in touch to discuss listing options.</p>
-        </div>
-      </section>
+    <div>
+      <Seo {...PAGE_SEO.sell} />
+      <PageHero
+        eyebrow="Sell in Kigali"
+        title="Sell your house or land in Rwanda"
+        description="Tell us about your property. Our team will review your request and get in touch to discuss listing and pricing."
+        image={HERO_IMAGES.sell}
+        imageAlt="Home for sale in Kigali"
+      />
 
       <section className="py-12">
         <div className="max-w-2xl mx-auto container-px">

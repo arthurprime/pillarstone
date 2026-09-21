@@ -8,8 +8,9 @@ import PropertyCard from '../components/PropertyCard'
 import LoadingSkeleton from '../components/LoadingSkeleton'
 import EmptyState from '../components/EmptyState'
 import type { Property } from '../lib/types'
-import { formatPrice, getLocationString, formatDate, getYouTubeEmbedUrl, getYouTubeThumbnailUrl, visiblePropertyFeatures } from '../lib/utils'
-import YouTubePlayOverlay from '../components/YouTubePlayOverlay'
+import { formatPrice, getLocationString, formatDate, visiblePropertyFeatures } from '../lib/utils'
+import { YouTubePlayer } from '../components/YouTubePlayer'
+import Seo from '../components/Seo'
 
 export default function PropertyDetailPage() {
   const { slug } = useParams()
@@ -23,12 +24,10 @@ export default function PropertyDetailPage() {
   const [submitting, setSubmitting] = useState(false)
   const [whatsappInquiring, setWhatsappInquiring] = useState(false)
   const [siteWhatsapp, setSiteWhatsapp] = useState('')
-  const [videoPlaying, setVideoPlaying] = useState(false)
 
   useEffect(() => {
     if (!slug) return
     setLoading(true)
-    setVideoPlaying(false)
     getPropertyBySlug(slug).then(p => {
       setProperty(p)
       if (p) getSimilarProperties(p, 3).then(setSimilar).catch(() => {})
@@ -132,6 +131,15 @@ export default function PropertyDetailPage() {
 
   return (
     <div className="pt-20">
+      <Seo
+        title={`${property.title} | ${isForRent ? 'For Rent' : 'For Sale'} in ${location || 'Kigali'} | Pillarstone`}
+        description={
+          property.description
+            ? property.description.slice(0, 155).trim()
+            : `${property.title} ${isForRent ? 'for rent' : 'for sale'} in ${location || 'Kigali, Rwanda'}. View photos, price and video with Pillarstone.`
+        }
+        keywords={`${property.title}, ${isForRent ? 'for rent' : 'for sale'} ${location}, property Kigali, ${property.property_types?.name ?? 'real estate'} Rwanda`}
+      />
       {/* Breadcrumb */}
       <div className="max-w-site container-px py-4">
         <Link to="/properties" className="flex items-center gap-2 text-sm text-stone-500 hover:text-ink-900 transition-colors">
@@ -265,35 +273,10 @@ export default function PropertyDetailPage() {
               </div>
             )}
 
-            {property.youtube_url && getYouTubeThumbnailUrl(property.youtube_url) && (
+            {property.youtube_url && (
               <div className="mb-8">
                 <h2 className="font-display text-xl text-ink-900 mb-4">Property Video</h2>
-                <div className="relative aspect-video overflow-hidden bg-ink-950">
-                  {videoPlaying && getYouTubeEmbedUrl(property.youtube_url) ? (
-                    <iframe
-                      src={`${getYouTubeEmbedUrl(property.youtube_url)}?autoplay=1`}
-                      title={`${property.title} video`}
-                      className="absolute inset-0 w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setVideoPlaying(true)}
-                      className="block w-full h-full relative group"
-                      aria-label="Play property video"
-                    >
-                      <img
-                        src={getYouTubeThumbnailUrl(property.youtube_url) ?? ''}
-                        alt={`${property.title} video thumbnail`}
-                        className="w-full h-full object-cover"
-                      />
-                      <span className="absolute inset-0 bg-ink-950/25 group-hover:bg-ink-950/35 transition-colors" />
-                      <YouTubePlayOverlay size={80} />
-                    </button>
-                  )}
-                </div>
+                <YouTubePlayer url={property.youtube_url} title={`${property.title} video`} />
               </div>
             )}
 

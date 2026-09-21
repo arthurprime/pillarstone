@@ -222,6 +222,21 @@ export interface SellRequest {
   updated_at: string
 }
 
+export interface ServiceProject {
+  id: string
+  category: 'construction' | 'interior'
+  title: string
+  slug: string
+  description: string | null
+  location: string | null
+  image_path: string | null
+  status: 'draft' | 'published' | 'archived'
+  sort_order: number
+  published_at: string | null
+  created_at: string
+  updated_at: string
+}
+
 export interface SiteContent {
   id: string
   section: string

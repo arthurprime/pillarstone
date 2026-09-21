@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import { MapPin, Mail, Phone, Clock } from 'lucide-react'
 import { getSiteSettings, submitInquiry } from '../lib/data'
 import { useToast } from '../components/Toast'
+import PageHero from '../components/PageHero'
+import Seo from '../components/Seo'
+import { HERO_IMAGES, PAGE_SEO } from '../lib/pageContent'
 
 export default function ContactPage() {
   const { toast } = useToast()
@@ -35,14 +38,15 @@ export default function ContactPage() {
   const address = settings.company_address ?? 'KG 11 Avenue, Kimihurura, Kigali, Rwanda'
 
   return (
-    <div className="pt-20">
-      <section className="bg-ink-950 text-warm-white py-16">
-        <div className="max-w-site container-px">
-          <p className="text-xs tracking-[0.2em] uppercase text-stone-400 mb-2">Contact</p>
-          <h1 className="font-display text-4xl md:text-5xl">Get in touch</h1>
-          <p className="text-stone-300 mt-4 max-w-lg">Questions about a listing, a construction project, or an interior — write to us and the team will respond promptly.</p>
-        </div>
-      </section>
+    <div>
+      <Seo {...PAGE_SEO.contact} />
+      <PageHero
+        eyebrow="Contact Kigali"
+        title="Talk to Pillarstone about a listing, a build or an interior"
+        description="Questions about a property, construction or interior design — write to us and the team will respond promptly."
+        image={HERO_IMAGES.contact}
+        imageAlt="Kigali city"
+      />
 
       <section className="py-16">
         <div className="max-w-site container-px">

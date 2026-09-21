@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Outlet, NavLink, Link } from 'react-router-dom'
 import {
   LayoutDashboard, Building2, Building, Users,
-  MapPin, Mail, Settings, FileEdit, Landmark, LogOut, Menu, X,
+  MapPin, Mail, Settings, FileEdit, Landmark, LogOut, Menu, X, HardHat,
 } from 'lucide-react'
 import { useAuth } from '../../lib/auth'
 import { useToast } from '../../components/Toast'
@@ -12,6 +12,7 @@ const navItems = [
   { to: '/admin', label: 'Overview', icon: LayoutDashboard, end: true },
   { to: '/admin/properties', label: 'Properties', icon: Building2 },
   { to: '/admin/developments', label: 'Developments', icon: Building },
+  { to: '/admin/projects', label: 'Projects', icon: HardHat },
   { to: '/admin/agents', label: 'Agents', icon: Users },
   { to: '/admin/locations', label: 'Locations', icon: MapPin },
   { to: '/admin/inquiries', label: 'Inquiries', icon: Mail },

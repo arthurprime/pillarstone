@@ -5,8 +5,11 @@ import PropertyCard from '../components/PropertyCard'
 import LoadingSkeleton from '../components/LoadingSkeleton'
 import EmptyState from '../components/EmptyState'
 import Pagination from '../components/Pagination'
+import PageHero from '../components/PageHero'
+import Seo from '../components/Seo'
 import { getProperties, getPropertyTypes, getLocations } from '../lib/data'
 import type { Property, PropertyType, Location } from '../lib/types'
+import { HERO_IMAGES, PAGE_SEO } from '../lib/pageContent'
 
 const PAGE_SIZE = 12
 
@@ -84,13 +87,14 @@ export default function PropertiesPage() {
 
   return (
     <div>
-      {/* Header */}
-      <section className="bg-ink-950 text-warm-white py-16">
-        <div className="max-w-site container-px">
-          <p className="text-xs tracking-[0.2em] uppercase text-stone-400 mb-2">Browse</p>
-          <h1 className="font-display text-4xl md:text-5xl">All Properties</h1>
-        </div>
-      </section>
+      <Seo {...PAGE_SEO.properties} />
+      <PageHero
+        eyebrow="Property listings"
+        title="Properties for sale and rent in Kigali"
+        description="Houses, apartments, villas, commercial space and land across Kigali and Rwanda."
+        image={HERO_IMAGES.properties}
+        imageAlt="Properties in Kigali"
+      />
 
       <section className="py-10">
         <div className="max-w-site container-px">

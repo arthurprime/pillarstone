@@ -28,7 +28,9 @@ import AdminUsers from './pages/admin/AdminUsers'
 import AdminContent from './pages/admin/AdminContent'
 import AdminSettings from './pages/admin/AdminSettings'
 import AdminSellRequests from './pages/admin/AdminSellRequests'
+import AdminServiceProjects from './pages/admin/AdminServiceProjects'
 import AdminLayout from './pages/admin/AdminLayout'
+import { HERO_IMAGES, PAGE_SEO } from './lib/pageContent'
 
 function FooterWrapper() {
   const [settings, setSettings] = useState<Record<string, string>>({})
@@ -48,6 +50,7 @@ export default function App() {
           <Route path="properties/new" element={<AdminPropertyEdit />} />
           <Route path="properties/:id" element={<AdminPropertyEdit />} />
           <Route path="developments" element={<AdminDevelopments />} />
+          <Route path="projects" element={<AdminServiceProjects />} />
           <Route path="agents" element={<AdminAgents />} />
           <Route path="locations" element={<AdminLocations />} />
           <Route path="inquiries" element={<AdminInquiries />} />
@@ -67,14 +70,14 @@ export default function App() {
                   <Route path="/" element={<HomePage />} />
                   <Route path="/properties" element={<PropertiesPage />} />
                   <Route path="/property/:slug" element={<PropertyDetailPage />} />
-                  <Route path="/buy" element={<CategoryPage listing="sale" title="Properties for Sale" />} />
-                  <Route path="/rent" element={<CategoryPage listing="rent" title="Properties for Rent" />} />
-                  <Route path="/land" element={<CategoryPage type="land" title="Land for Sale" />} />
-                  <Route path="/houses" element={<CategoryPage type="house" title="Houses" />} />
-                  <Route path="/villas" element={<CategoryPage type="villa" title="Villas" />} />
-                  <Route path="/apartments" element={<CategoryPage type="apartment" title="Apartments" />} />
-                  <Route path="/townhouses" element={<CategoryPage type="townhouse" title="Townhouses" />} />
-                  <Route path="/commercial" element={<CategoryPage type="commercial" title="Commercial Properties" />} />
+                  <Route path="/buy" element={<CategoryPage listing="sale" title="Houses and land for sale in Kigali" description={PAGE_SEO.buy.description} eyebrow="Buy in Rwanda" image={HERO_IMAGES.buy} seo={PAGE_SEO.buy} />} />
+                  <Route path="/rent" element={<CategoryPage listing="rent" title="Houses and apartments for rent in Kigali" description={PAGE_SEO.rent.description} eyebrow="Rent in Kigali" image={HERO_IMAGES.rent} seo={PAGE_SEO.rent} />} />
+                  <Route path="/land" element={<CategoryPage type="land" title="Land for sale in Kigali, Rwanda" description={PAGE_SEO.land.description} eyebrow="Land" image={HERO_IMAGES.land} seo={PAGE_SEO.land} />} />
+                  <Route path="/houses" element={<CategoryPage type="house" title="Houses for sale and rent in Kigali" description={PAGE_SEO.houses.description} eyebrow="Houses" image={HERO_IMAGES.houses} seo={PAGE_SEO.houses} />} />
+                  <Route path="/villas" element={<CategoryPage type="villa" title="Villas for sale in Kigali" description={PAGE_SEO.villas.description} eyebrow="Villas" image={HERO_IMAGES.villas} seo={PAGE_SEO.villas} />} />
+                  <Route path="/apartments" element={<CategoryPage type="apartment" title="Apartments for sale and rent in Kigali" description={PAGE_SEO.apartments.description} eyebrow="Apartments" image={HERO_IMAGES.apartments} seo={PAGE_SEO.apartments} />} />
+                  <Route path="/townhouses" element={<CategoryPage type="townhouse" title="Townhouses in Kigali" description={PAGE_SEO.townhouses.description} eyebrow="Townhouses" image={HERO_IMAGES.townhouses} seo={PAGE_SEO.townhouses} />} />
+                  <Route path="/commercial" element={<CategoryPage type="commercial" title="Commercial property in Kigali" description={PAGE_SEO.commercial.description} eyebrow="Commercial" image={HERO_IMAGES.commercial} seo={PAGE_SEO.commercial} />} />
                   <Route path="/developments" element={<DevelopmentsPage />} />
                   <Route path="/development/:slug" element={<DevelopmentDetailPage />} />
                   <Route path="/about" element={<AboutPage />} />

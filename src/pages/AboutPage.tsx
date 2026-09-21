@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom'
 import { getAllSiteContent, getAgents } from '../lib/data'
 import type { Agent } from '../lib/types'
 import { Mail, Phone } from 'lucide-react'
+import PageHero from '../components/PageHero'
+import Seo from '../components/Seo'
+import { HERO_IMAGES, PAGE_SEO } from '../lib/pageContent'
 
 export default function AboutPage() {
   const [content, setContent] = useState<Record<string, any>>({})
@@ -19,13 +22,15 @@ export default function AboutPage() {
   const about = content.about ?? {}
 
   return (
-    <div className="pt-20">
-      <section className="bg-ink-950 text-warm-white py-16">
-        <div className="max-w-site container-px">
-          <p className="text-xs tracking-[0.2em] uppercase text-stone-400 mb-2">About</p>
-          <h1 className="font-display text-4xl md:text-5xl">{about.title ?? 'A different kind of property company.'}</h1>
-        </div>
-      </section>
+    <div>
+      <Seo {...PAGE_SEO.about} />
+      <PageHero
+        eyebrow="About Pillarstone"
+        title={about.title ?? 'A Kigali property company for buying, building and interiors.'}
+        description="Real estate listings, construction and interior design — one team from land to a finished home."
+        image={about.image || HERO_IMAGES.about}
+        imageAlt="Pillarstone team"
+      />
 
       <section className="py-16">
         <div className="max-w-site container-px">

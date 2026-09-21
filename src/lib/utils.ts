@@ -45,31 +45,51 @@ export function getLocationString(property: any): string {
   return parts.join(', ')
 }
 
+function normalizeYouTubeId(value: string | null | undefined): string | null {
+  if (!value) return null
+  const id = value.replace(/[^a-zA-Z0-9_-].*$/, '').slice(0, 11)
+  return /^[\w-]{11}$/.test(id) ? id : null
+}
+
 export function getYouTubeVideoId(url: string | null | undefined): string | null {
   if (!url) return null
   const trimmed = url.trim()
   if (!trimmed) return null
-  if (/^[\w-]{11}$/.test(trimmed)) return trimmed
+  const direct = normalizeYouTubeId(trimmed)
+  if (direct && !trimmed.includes('/') && !trimmed.includes('=')) return direct
 
-  try {
-    const parsed = new URL(trimmed)
-    const host = parsed.hostname.replace(/^www\./, '')
-    if (host === 'youtu.be') {
-      const id = parsed.pathname.split('/').filter(Boolean)[0]
-      return id?.slice(0, 11) || null
-    }
-    if (host === 'youtube.com' || host === 'm.youtube.com' || host === 'youtube-nocookie.com') {
-      const fromQuery = parsed.searchParams.get('v')
-      if (fromQuery) return fromQuery
-      const parts = parsed.pathname.split('/').filter(Boolean)
-      if (['embed', 'shorts', 'live', 'v'].includes(parts[0])) {
-        return parts[1] || null
-      }
-    }
-  } catch {
-    return null
+  const candidates = [trimmed]
+  if (!/^https?:\/\//i.test(trimmed)) {
+    candidates.push(`https://${trimmed.replace(/^\/\//, '')}`)
   }
-  return null
+
+  for (const raw of candidates) {
+    try {
+      const parsed = new URL(raw)
+      const host = parsed.hostname.replace(/^www\./, '').replace(/^m\./, '')
+      if (host === 'youtu.be') {
+        const id = normalizeYouTubeId(parsed.pathname.split('/').filter(Boolean)[0])
+        if (id) return id
+      }
+      if (host === 'youtube.com' || host === 'youtube-nocookie.com' || host === 'music.youtube.com') {
+        const fromQuery = normalizeYouTubeId(parsed.searchParams.get('v'))
+        if (fromQuery) return fromQuery
+        const parts = parsed.pathname.split('/').filter(Boolean)
+        if (parts[0] === 'watch') {
+          const id = normalizeYouTubeId(parts[1])
+          if (id) return id
+        }
+        if (['embed', 'shorts', 'live', 'v', 'e'].includes(parts[0])) {
+          const id = normalizeYouTubeId(parts[1])
+          if (id) return id
+        }
+      }
+    } catch {
+      continue
+    }
+  }
+
+  return normalizeYouTubeId(trimmed.match(/(?:v=|youtu\.be\/|embed\/|shorts\/|live\/)([\w-]{11})/)?.[1])
 }
 
 export function getYouTubeThumbnailUrl(url: string | null | undefined): string | null {
@@ -77,9 +97,25 @@ export function getYouTubeThumbnailUrl(url: string | null | undefined): string |
   return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null
 }
 
-export function getYouTubeEmbedUrl(url: string | null | undefined): string | null {
+export function getYouTubeWatchUrl(url: string | null | undefined): string | null {
   const id = getYouTubeVideoId(url)
-  return id ? `https://www.youtube-nocookie.com/embed/${id}` : null
+  return id ? `https://www.youtube.com/watch?v=${id}` : null
+}
+
+export function getYouTubeEmbedUrl(
+  url: string | null | undefined,
+  options: { autoplay?: boolean } = {},
+): string | null {
+  const id = getYouTubeVideoId(url)
+  if (!id) return null
+  const params = new URLSearchParams({
+    rel: '0',
+    modestbranding: '1',
+    playsinline: '1',
+    enablejsapi: '1',
+  })
+  if (options.autoplay) params.set('autoplay', '1')
+  return `https://www.youtube.com/embed/${id}?${params.toString()}`
 }
 
 const YOUTUBE_AMENITY_PREFIX = '__yt__:'

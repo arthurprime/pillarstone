@@ -11,6 +11,10 @@ import {
   getAllSiteContent, getSiteSettings, getPropertyTypes,
 } from '../lib/data'
 import type { Property, Development, PropertyType } from '../lib/types'
+import { YouTubePlayer } from '../components/YouTubePlayer'
+import Seo from '../components/Seo'
+import { PAGE_SEO } from '../lib/pageContent'
+import { getYouTubeVideoId, getYouTubeWatchUrl } from '../lib/utils'
 
 export default function HomePage() {
   const navigate = useNavigate()
@@ -18,6 +22,7 @@ export default function HomePage() {
   const [latest, setLatest] = useState<Property[]>([])
   const [dev, setDev] = useState<Development | null>(null)
   const [content, setContent] = useState<Record<string, any>>({})
+  const [settings, setSettings] = useState<Record<string, string>>({})
   const [types, setTypes] = useState<PropertyType[]>([])
   const [loading, setLoading] = useState(true)
   const [searchListing, setSearchListing] = useState('sale')
@@ -31,12 +36,14 @@ export default function HomePage() {
       getFeaturedDevelopment(),
       getAllSiteContent(),
       getPropertyTypes(),
-    ]).then(([f, l, d, c, t]) => {
+      getSiteSettings(),
+    ]).then(([f, l, d, c, t, s]) => {
       setFeatured(f)
       setLatest(l)
       setDev(d)
       setContent(c)
       setTypes(t)
+      setSettings(s)
     }).catch((err) => {
       console.error(err)
     }).finally(() => setLoading(false))
@@ -55,9 +62,14 @@ export default function HomePage() {
   const about = content.about ?? {}
   const why = content.why_choose_us ?? {}
   const cta = content.cta ?? {}
+  const siteVideo = settings.youtube_url
+  const siteVideoId = getYouTubeVideoId(siteVideo)
+  const seoTitle = settings.seo_default_title || PAGE_SEO.home.title
+  const seoDescription = settings.seo_default_description || PAGE_SEO.home.description
 
   return (
     <div>
+      <Seo title={seoTitle} description={seoDescription} keywords={PAGE_SEO.home.keywords} />
       {/* HERO */}
       <section className="relative h-[85vh] min-h-[600px] flex items-center overflow-hidden">
         <div className="absolute inset-0">
@@ -72,10 +84,10 @@ export default function HomePage() {
           <div className="max-w-2xl">
             <p className="text-warm-white/70 text-sm tracking-[0.2em] uppercase mb-4 animate-fade-in">Real Estate</p>
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-warm-white leading-[1.1] mb-4 text-balance animate-fade-up">
-              {hero.title ?? 'Find a place worth coming home to.'}
+              {hero.title ?? 'Properties for sale in Kigali — homes worth coming back to.'}
             </h1>
             <p className="text-lg text-stone-200 mb-8 max-w-lg animate-fade-up" style={{ animationDelay: '0.1s' }}>
-              {hero.subtitle ?? 'Real estate, construction, and interiors — selected and built with care.'}
+              {hero.subtitle ?? 'Buy, rent or list in Rwanda. Construction and interiors with the same team.'}
             </p>
             <div className="flex gap-3 mb-8 animate-fade-up" style={{ animationDelay: '0.2s' }}>
               <Link
@@ -183,6 +195,36 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {(siteVideoId || getYouTubeWatchUrl(siteVideo)) && (
+        <section className="py-20 bg-ink-950 text-warm-white">
+          <div className="max-w-site container-px">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <p className="text-xs tracking-[0.2em] uppercase text-stone-400 mb-2">Video</p>
+                <h2 className="font-display text-3xl md:text-4xl mb-4">See Pillarstone in Kigali</h2>
+                <p className="text-stone-300 leading-relaxed">
+                  Watch property tours and project films. On listings, tap the red play button to open the video without leaving the page.
+                </p>
+              </div>
+              <div>
+                {siteVideoId && siteVideo ? (
+                  <YouTubePlayer url={siteVideo} title="Pillarstone video" />
+                ) : (
+                  <a
+                    href={getYouTubeWatchUrl(siteVideo) ?? siteVideo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block px-6 py-3 border border-warm-white/40 text-sm tracking-wide hover:bg-warm-white/10"
+                  >
+                    Open YouTube
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* SERVICES */}
       <section className="py-20">
