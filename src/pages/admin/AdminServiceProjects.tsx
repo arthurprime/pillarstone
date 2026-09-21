@@ -316,38 +316,70 @@ export default function AdminServiceProjects() {
             <textarea rows={4} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full px-3 py-2 border border-stone-300 text-sm resize-none" />
           </div>
           <div>
-            <label className="block text-xs uppercase text-stone-500 mb-1">Photo</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0]
-                if (file) handleUpload(file)
-              }}
-              className="block w-full text-sm text-stone-600 mb-2"
-            />
-            {uploadStatus === 'compressing' && (
-              <p className="text-xs text-amber-600 mb-2 flex items-center gap-1.5">
-                <span className="inline-block w-3 h-3 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
-                Compressing image…
-              </p>
-            )}
-            {uploadStatus === 'uploading' && (
-              <p className="text-xs text-blue-600 mb-2 flex items-center gap-1.5">
-                <span className="inline-block w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
-                Uploading…
-              </p>
-            )}
+            <label className="block text-xs uppercase text-stone-500 mb-2">Photo</label>
 
-            <input
-              type="text"
-              value={form.image_path}
-              onChange={(e) => setForm({ ...form, image_path: e.target.value })}
-              className="w-full px-3 py-2 border border-stone-300 text-sm"
-              placeholder="Or paste an image URL"
-            />
-            {form.image_path && (
-              <img src={form.image_path} alt="" className="mt-3 w-full max-h-48 object-cover border border-stone-200" />
+            {/* Upload zone — shown when no photo yet or while uploading */}
+            {!form.image_path || uploading ? (
+              <label
+                className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded cursor-pointer transition-colors ${
+                  uploading ? 'border-stone-300 bg-stone-50' : 'border-stone-300 hover:border-ink-700 hover:bg-stone-50'
+                }`}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault()
+                  const file = e.dataTransfer.files?.[0]
+                  if (file) handleUpload(file)
+                }}
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={uploading}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) handleUpload(file)
+                  }}
+                />
+                {uploadStatus === 'compressing' && (
+                  <div className="flex flex-col items-center gap-2 text-amber-600">
+                    <span className="w-6 h-6 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+                    <span className="text-xs font-medium">Compressing image…</span>
+                  </div>
+                )}
+                {uploadStatus === 'uploading' && (
+                  <div className="flex flex-col items-center gap-2 text-blue-600">
+                    <span className="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                    <span className="text-xs font-medium">Uploading…</span>
+                  </div>
+                )}
+                {uploadStatus === 'idle' && (
+                  <div className="flex flex-col items-center gap-2 text-stone-400 pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                    </svg>
+                    <span className="text-sm font-medium text-stone-600">Click or drag photo here</span>
+                    <span className="text-xs text-stone-400">JPG, PNG, WEBP — up to 30 MB</span>
+                  </div>
+                )}
+              </label>
+            ) : (
+              /* Preview — shown once photo is uploaded */
+              <div className="relative group">
+                <img
+                  src={form.image_path}
+                  alt="Project photo"
+                  className="w-full max-h-56 object-cover rounded border border-stone-200"
+                />
+                <button
+                  type="button"
+                  onClick={() => setForm(prev => ({ ...prev, image_path: '' }))}
+                  className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  Remove
+                </button>
+                <p className="text-xs text-stone-400 mt-1">Hover the photo and click Remove to change it.</p>
+              </div>
             )}
           </div>
           <div className="flex gap-3 justify-end">
