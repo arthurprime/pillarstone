@@ -53,7 +53,8 @@ function normalizeYouTubeId(value: string | null | undefined): string | null {
 
 export function getYouTubeVideoId(url: string | null | undefined): string | null {
   if (!url) return null
-  const trimmed = url.trim()
+  let trimmed = url.trim().replace(/^<|>$/g, '').replace(/^['"]|['"]$/g, '')
+  if (trimmed.startsWith('__yt__:')) trimmed = trimmed.slice('__yt__:'.length).trim()
   if (!trimmed) return null
   const direct = normalizeYouTubeId(trimmed)
   if (direct && !trimmed.includes('/') && !trimmed.includes('=')) return direct
@@ -112,9 +113,12 @@ export function getYouTubeEmbedUrl(
     rel: '0',
     modestbranding: '1',
     playsinline: '1',
-    enablejsapi: '1',
   })
   if (options.autoplay) params.set('autoplay', '1')
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    params.set('origin', window.location.origin)
+    params.set('widget_referrer', window.location.origin)
+  }
   return `https://www.youtube.com/embed/${id}?${params.toString()}`
 }
 
