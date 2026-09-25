@@ -388,7 +388,28 @@ export async function submitSellRequest(req: {
 
 // ============ SERVICE PROJECTS ============
 
+export function getServiceProjectPhotos(project: ServiceProject): string[] {
+  const fromGallery = [...(project.service_project_images ?? [])]
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .map(img => img.image_path)
+    .filter(Boolean)
+  if (fromGallery.length > 0) return fromGallery
+  return project.image_path ? [project.image_path] : []
+}
+
 export async function getServiceProjects(category: 'construction' | 'interior'): Promise<ServiceProject[]> {
+  const withImages = await supabase
+    .from('service_projects')
+    .select('*, service_project_images(*)')
+    .eq('category', category)
+    .eq('status', 'published')
+    .order('sort_order', { ascending: true })
+    .order('published_at', { ascending: false })
+
+  if (!withImages.error) {
+    return (withImages.data as ServiceProject[]) ?? []
+  }
+
   const { data, error } = await supabase
     .from('service_projects')
     .select('*')

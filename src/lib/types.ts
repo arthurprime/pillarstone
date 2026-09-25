@@ -222,6 +222,14 @@ export interface SellRequest {
   updated_at: string
 }
 
+export interface ServiceProjectImage {
+  id: string
+  project_id: string
+  image_path: string
+  sort_order: number
+  created_at: string
+}
+
 export interface ServiceProject {
   id: string
   category: 'construction' | 'interior'
@@ -235,6 +243,7 @@ export interface ServiceProject {
   published_at: string | null
   created_at: string
   updated_at: string
+  service_project_images?: ServiceProjectImage[]
 }
 
 export interface SiteContent {
